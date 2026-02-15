@@ -808,6 +808,33 @@ export default function LoginPage() {
   const [restaurantData, setRestaurantData] = useState(null);
   const [baselineData, setBaselineData] = useState(null);
   const [customizeData, setCustomizeData] = useState(null);
+  const [checkingSession, setCheckingSession] = useState(true);
+
+  // Check for existing session on page load (handles OAuth redirect)
+  useEffect(() => {
+    async function checkSession() {
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      if (currentUser) {
+        // User is logged in — check if they have a restaurant
+        const { data: restaurants } = await supabase
+          .from("restaurants")
+          .select("id")
+          .eq("owner_id", currentUser.id)
+          .limit(1);
+
+        if (restaurants && restaurants.length > 0) {
+          router.push("/dashboard");
+          return;
+        } else {
+          setUser(currentUser);
+          setUserEmail(currentUser.email);
+          setCurrentStep(2);
+        }
+      }
+      setCheckingSession(false);
+    }
+    checkSession();
+  }, [router]);
 
   const handleAuthSuccess = async (userData) => {
     setUser(userData);
@@ -891,6 +918,18 @@ export default function LoginPage() {
     { number: 4, label: "Customize" },
     { number: 5, label: "Launch" },
   ];
+
+  // Show loading while checking session
+  if (checkingSession) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-brand-50 to-brand-100 flex items-center justify-center p-4">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-600 mx-auto mb-4" />
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   // Render email verification screen
   if (currentStep === "email-verification") {
