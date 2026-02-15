@@ -105,7 +105,7 @@ export async function POST(request) {
             </table>
             <p>
               <a href="https://platerate.app/dashboard/feedback" style="color: #2563eb; text-decoration: none;">
-                View feedback in dashboard â
+                View feedback in dashboard →
               </a>
             </p>
           </div>

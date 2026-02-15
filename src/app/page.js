@@ -51,7 +51,7 @@ export default function Home() {
   const faqItems = [
     {
       question: "How does PlateRate work?",
-      answer: "PlateRate intercepts customer feedback at the moment of truth. Customers scan a QR code or click a link, rate their experience with stars, and are intelligently routedâhappy customers (4-5 stars) go directly to leave a Google review, while lower ratings are collected as private feedback for you to improve.",
+      answer: "PlateRate intercepts customer feedback at the moment of truth. Customers scan a QR code or click a link, rate their experience with stars, and are intelligently routed—happy customers (4-5 stars) go directly to leave a Google review, while lower ratings are collected as private feedback for you to improve.",
     },
     {
       question: "Will this actually increase my Google reviews?",
@@ -63,11 +63,11 @@ export default function Home() {
     },
     {
       question: "Can I customize what star ratings go to Google?",
-      answer: "Absolutely. You control the thresholdâdecide whether 4+ stars, 3+ stars, or custom ratings go to Google Reviews. Lower ratings automatically flow to your private dashboard so you can respond to feedback and improve your operation.",
+      answer: "Absolutely. You control the threshold—decide whether 4+ stars, 3+ stars, or custom ratings go to Google Reviews. Lower ratings automatically flow to your private dashboard so you can respond to feedback and improve your operation.",
     },
     {
       question: "Is there a contract or can I cancel anytime?",
-      answer: "No contracts, no hidden fees. Cancel anytime with a single click. We believe in earning your business monthly by delivering real results. Most customers stay because they see the ROIâbut we never lock you in.",
+      answer: "No contracts, no hidden fees. Cancel anytime with a single click. We believe in earning your business monthly by delivering real results. Most customers stay because they see the ROI—but we never lock you in.",
     },
     {
       question: "How long does setup take?",
@@ -83,7 +83,7 @@ export default function Home() {
       rating: 5,
     },
     {
-      quote: "The private feedback from customers has been invaluable. We fixed our wait time process after getting consistent feedbackânow it's our strongest asset. PlateRate literally pays for itself.",
+      quote: "The private feedback from customers has been invaluable. We fixed our wait time process after getting consistent feedback—now it's our strongest asset. PlateRate literally pays for itself.",
       author: "Sarah Chen",
       restaurant: "The Golden Fork, San Francisco CA",
       rating: 5,
@@ -198,7 +198,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-2">
-              <span className="text-2xl">ð½ï¸</span>
+              <span className="text-2xl">🍽️</span>
               <span className="font-bold text-xl text-gray-900">PlateRate</span>
             </div>
 
@@ -263,7 +263,7 @@ export default function Home() {
                             star <= selectedStars ? 'opacity-100' : 'opacity-30'
                           }`}
                         >
-                          â­
+                          ⭐
                         </button>
                       ))}
                     </div>
@@ -271,14 +271,14 @@ export default function Home() {
                   {selectedStars >= 4 && (
                     <div className="bg-green-50 border border-green-200 rounded-lg p-4 animate-fade-in">
                       <p className="text-sm font-medium text-green-900">
-                        â Redirecting to Google Reviews...
+                        ✓ Redirecting to Google Reviews...
                       </p>
                     </div>
                   )}
                   {selectedStars > 0 && selectedStars < 4 && (
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 animate-fade-in">
                       <p className="text-sm font-medium text-blue-900">
-                        ð¬ Thanks for your feedback
+                        💬 Thanks for your feedback
                       </p>
                     </div>
                   )}
@@ -337,19 +337,19 @@ export default function Home() {
                 step: '1',
                 title: 'Customer Scans QR Code',
                 description: 'Display a QR code in-house or on receipts. Customers scan and rate in 15 seconds.',
-                icon: 'ð±',
+                icon: '📱',
               },
               {
                 step: '2',
                 title: 'Happy Customers to Google',
                 description: '4-5 star ratings instantly redirect to Google Reviews with a single tap.',
-                icon: 'â­',
+                icon: '⭐',
               },
               {
                 step: '3',
                 title: 'Lower Ratings to You',
                 description: '1-3 star ratings flow to your private dashboard. Fix issues before they go public.',
-                icon: 'ð¬',
+                icon: '💬',
               },
             ].map((item, i) => (
               <div key={i} className="relative animate-fade-in-up" style={{ animationDelay: `${i * 0.15}s` }}>
@@ -378,32 +378,32 @@ export default function Home() {
           <div className="grid md:grid-cols-3 gap-8">
             {[
               {
-                icon: 'ð¯',
+                icon: '🎯',
                 title: 'QR Code Generation',
                 description: 'Instant printable QR codes. Display in-house, on receipts, or text to customers.',
               },
               {
-                icon: 'ðï¸',
+                icon: '🎛️',
                 title: 'Smart Routing',
-                description: 'Threshold-based routing. You control where each rating goesâGoogle or private.',
+                description: 'Threshold-based routing. You control where each rating goes—Google or private.',
               },
               {
-                icon: 'ð',
+                icon: '📊',
                 title: 'Real-time Dashboard',
                 description: 'Live analytics, feedback tracking, and actionable insights at a glance.',
               },
               {
-                icon: 'ð',
+                icon: '🔔',
                 title: 'Low-Rating Alerts',
                 description: 'Instant email notifications for any 1-3 star ratings so you can respond fast.',
               },
               {
-                icon: 'ð',
+                icon: '📈',
                 title: 'Review Funnel Analytics',
                 description: 'Track conversion rates from QR scan to published Google review effortlessly.',
               },
               {
-                icon: 'ð¥',
+                icon: '🥘',
                 title: 'Category Insights',
                 description: 'Breakdown feedback by food quality, service speed, cleanliness, and more.',
               },
@@ -448,7 +448,7 @@ export default function Home() {
                           star <= selectedStars ? 'scale-110 opacity-100' : 'opacity-30 hover:scale-105'
                         }`}
                       >
-                        â­
+                        ⭐
                       </button>
                     ))}
                   </div>
@@ -460,7 +460,7 @@ export default function Home() {
                       Thanks! Tap below to leave a Google review
                     </p>
                     <button className="mt-3 w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg text-sm font-semibold transition">
-                      Leave Review â
+                      Leave Review →
                     </button>
                   </div>
                 )}
@@ -610,7 +610,7 @@ export default function Home() {
                   <ul className="space-y-4">
                     {plan.features.map((feature, j) => (
                       <li key={j} className="flex items-start gap-3">
-                        <span className="text-xl mt-1">â</span>
+                        <span className="text-xl mt-1">✓</span>
                         <span>{feature}</span>
                       </li>
                     ))}
@@ -639,7 +639,7 @@ export default function Home() {
               >
                 <div className="flex gap-1 mb-4">
                   {[...Array(testimonial.rating)].map((_, j) => (
-                    <span key={j} className="text-xl">â­</span>
+                    <span key={j} className="text-xl">⭐</span>
                   ))}
                 </div>
                 <p className="text-gray-700 mb-6 italic text-lg">"{testimonial.quote}"</p>
@@ -674,7 +674,7 @@ export default function Home() {
                 >
                   <h3 className="font-semibold text-gray-900 text-left">{item.question}</h3>
                   <span className={`text-2xl transition transform ${expandedFaqIndex === i ? 'rotate-180' : ''}`}>
-                    â¼
+                    ▼
                   </span>
                 </button>
 
@@ -710,7 +710,7 @@ export default function Home() {
               type="submit"
               className="bg-white text-brand-600 hover:bg-gray-100 px-6 py-3 rounded-lg font-semibold transition"
             >
-              {submitted ? 'â Sent!' : 'Get Started'}
+              {submitted ? '✓ Sent!' : 'Get Started'}
             </button>
           </form>
 
@@ -724,7 +724,7 @@ export default function Home() {
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
               <div className="flex items-center space-x-2 mb-4">
-                <span className="text-2xl">ð½ï¸</span>
+                <span className="text-2xl">🍽️</span>
                 <span className="font-bold text-white">PlateRate</span>
               </div>
               <p className="text-sm">Turning diners into 5-star reviewers.</p>
@@ -790,7 +790,7 @@ export default function Home() {
           </div>
 
           <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
-            <p className="text-sm">Â© 2024 PlateRate. All rights reserved.</p>
+            <p className="text-sm">© 2024 PlateRate. All rights reserved.</p>
             <div className="flex gap-6 mt-4 md:mt-0">
               <a href="#" className="text-gray-500 hover:text-white transition">
                 Twitter

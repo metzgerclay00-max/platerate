@@ -1,7 +1,7 @@
 -- ===========================================
--- PlateRate MVP â Supabase Database Schema
+-- PlateRate MVP — Supabase Database Schema
 -- ===========================================
--- Run this in your Supabase SQL Editor (Dashboard â SQL Editor â New Query)
+-- Run this in your Supabase SQL Editor (Dashboard → SQL Editor → New Query)
 
 -- 1. Restaurants table
 create table public.restaurants (
@@ -29,7 +29,7 @@ create table public.feedback (
 alter table public.restaurants enable row level security;
 alter table public.feedback enable row level security;
 
--- 4. RLS Policies â owners can only see their own data
+-- 4. RLS Policies — owners can only see their own data
 create policy "Owners can view their own restaurants"
   on public.restaurants for select
   using (auth.uid() = owner_id);

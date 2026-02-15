@@ -1,5 +1,5 @@
 -- ===========================================
--- PlateRate V2 â Schema Updates
+-- PlateRate V2 — Schema Updates
 -- ===========================================
 -- Run this in Supabase SQL Editor AFTER the original schema
 

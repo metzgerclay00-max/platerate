@@ -4,21 +4,21 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 
 const CATEGORY_EMOJIS = {
-  'Food': 'ð½ï¸',
-  'Service': 'ð¤',
-  'Wait Time': 'â±ï¸',
-  'Cleanliness': 'â¨',
-  'Ambiance': 'ðµ',
-  'Value': 'ð°',
-  'Other': 'ð­',
+  'Food': '🍽️',
+  'Service': '🤝',
+  'Wait Time': '⏱️',
+  'Cleanliness': '✨',
+  'Ambiance': '🎵',
+  'Value': '💰',
+  'Other': '💭',
 };
 
 const RATING_FEEDBACK = {
-  1: { emoji: 'ð', label: 'Terrible' },
-  2: { emoji: 'ð', label: 'Not Great' },
-  3: { emoji: 'ð', label: 'Okay' },
-  4: { emoji: 'ð', label: 'Great' },
-  5: { emoji: 'ð¤©', label: 'Amazing!' },
+  1: { emoji: '😞', label: 'Terrible' },
+  2: { emoji: '😕', label: 'Not Great' },
+  3: { emoji: '😐', label: 'Okay' },
+  4: { emoji: '😊', label: 'Great' },
+  5: { emoji: '🤩', label: 'Amazing!' },
 };
 
 async function trackEvent(eventType, restaurantId, feedbackId = null, metadata = null) {
@@ -105,7 +105,7 @@ function Step1Rating({ restaurant, onRatingSubmit, isLoading }) {
                   : 'scale-95'
               }`}
             >
-              â­
+              ⭐
             </button>
           ))}
         </div>
@@ -166,7 +166,7 @@ function Step2aGoogleRedirect({ restaurant, onCompleted, isLoading }) {
               animationDelay: `${Math.random() * 0.5}s`,
             }}
           >
-            ð
+            🎉
           </div>
         ))}
       </div>
@@ -193,7 +193,7 @@ function Step2aGoogleRedirect({ restaurant, onCompleted, isLoading }) {
           disabled={isLoading}
           className="w-full max-w-xs py-4 px-6 mb-6 bg-white border-2 border-blue-500 text-blue-600 font-semibold rounded-lg hover:bg-blue-50 active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
         >
-          <span className="text-xl">ð</span>
+          <span className="text-xl">📍</span>
           Share on Google Reviews
         </button>
 
@@ -368,12 +368,12 @@ function Step2bPrivateFeedback({ restaurant, rating, onSubmitted, isLoading }) {
           >
             {isSubmitting ? (
               <>
-                <span className="animate-spin inline-block">â³</span>
+                <span className="animate-spin inline-block">⏳</span>
                 Submitting...
               </>
             ) : (
               <>
-                <span>â</span>
+                <span>✓</span>
                 Submit Feedback
               </>
             )}
@@ -396,7 +396,7 @@ function Step3ThankYou({ restaurant, customerName }) {
       <div className="flex-1 flex flex-col items-center justify-center px-6 py-12 text-center">
         {/* Animated checkmark */}
         <div className="mb-8 animate-bounce-slow">
-          <div className="text-7xl">â</div>
+          <div className="text-7xl">✓</div>
         </div>
 
         <h2 className="text-2xl font-semibold text-gray-900 mb-4">
@@ -477,7 +477,7 @@ export default function ReviewPage({ params }) {
   if (error || !restaurant) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-brand-50 to-white flex flex-col items-center justify-center px-6">
-        <div className="text-6xl mb-4">â</div>
+        <div className="text-6xl mb-4">❌</div>
         <h1 className="text-2xl font-bold text-gray-900 mb-2">Oops!</h1>
         <p className="text-gray-600 text-center">
           {error || 'We could not find this restaurant.'}

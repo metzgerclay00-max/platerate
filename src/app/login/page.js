@@ -85,7 +85,7 @@ function AuthStep({ onSuccess, onSignupSent }) {
           }}
           className="text-sm text-brand-600 hover:text-brand-700 font-medium mb-6"
         >
-          â Back to login
+          ← Back to login
         </button>
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Reset password</h2>
         <p className="text-gray-600 text-sm mb-6">
@@ -158,7 +158,7 @@ function AuthStep({ onSuccess, onSignupSent }) {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="â¢â¢â¢â¢â¢â¢â¢â¢"
+            placeholder="••••••••"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
             required
           />
@@ -420,7 +420,7 @@ function BaselineStep({ onComplete, onSkip }) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
         <div className="bg-brand-50 border border-brand-200 rounded-lg p-6">
-          <div className="text-4xl font-bold text-brand-600 mb-2">ð</div>
+          <div className="text-4xl font-bold text-brand-600 mb-2">📊</div>
           <h3 className="font-semibold text-gray-900 mb-2">Track Progress</h3>
           <p className="text-gray-600 text-sm">
             See how your restaurant's Google rating improves each week with PlateRate's dashboard.
@@ -428,7 +428,7 @@ function BaselineStep({ onComplete, onSkip }) {
         </div>
 
         <div className="bg-brand-50 border border-brand-200 rounded-lg p-6">
-          <div className="text-4xl font-bold text-brand-600 mb-2">ð¯</div>
+          <div className="text-4xl font-bold text-brand-600 mb-2">🎯</div>
           <h3 className="font-semibold text-gray-900 mb-2">Smart Routing</h3>
           <p className="text-gray-600 text-sm">
             Route only satisfied customers to Google to improve your rating consistently.
@@ -567,7 +567,7 @@ function CustomizeStep({ userEmail, onComplete }) {
                     <div className="text-gray-600 text-sm">{t.description}</div>
                   </div>
                   {threshold === t.value && (
-                    <div className="text-brand-600 font-medium">â</div>
+                    <div className="text-brand-600 font-medium">✓</div>
                   )}
                 </div>
               </button>
@@ -687,7 +687,7 @@ function SuccessStep({ restaurant, onDashboard }) {
   return (
     <div className="w-full max-w-2xl mx-auto">
       <div className="text-center mb-8">
-        <div className="text-6xl mb-4">ð</div>
+        <div className="text-6xl mb-4">🎉</div>
         <h2 className="text-3xl font-bold text-gray-900 mb-2">You're all set!</h2>
         <p className="text-gray-600">
           Your restaurant is ready to collect better reviews
@@ -731,19 +731,19 @@ function SuccessStep({ restaurant, onDashboard }) {
         <h3 className="font-semibold text-gray-900 mb-4">Quick Tips</h3>
         <ul className="space-y-3 text-gray-700 text-sm">
           <li className="flex gap-3">
-            <span className="text-brand-600 font-bold">â¢</span>
+            <span className="text-brand-600 font-bold">•</span>
             <span>Print your QR code and display it on receipts, tables, and at checkout</span>
           </li>
           <li className="flex gap-3">
-            <span className="text-brand-600 font-bold">â¢</span>
+            <span className="text-brand-600 font-bold">•</span>
             <span>Share the review link in follow-up emails and text messages</span>
           </li>
           <li className="flex gap-3">
-            <span className="text-brand-600 font-bold">â¢</span>
+            <span className="text-brand-600 font-bold">•</span>
             <span>Monitor incoming feedback from your dashboard in real-time</span>
           </li>
           <li className="flex gap-3">
-            <span className="text-brand-600 font-bold">â¢</span>
+            <span className="text-brand-600 font-bold">•</span>
             <span>Respond to feedback and watch your Google rating improve</span>
           </li>
         </ul>
@@ -763,7 +763,7 @@ function SuccessStep({ restaurant, onDashboard }) {
 function EmailVerificationScreen({ email }) {
   return (
     <div className="w-full max-w-md mx-auto text-center py-12">
-      <div className="text-6xl mb-6">âï¸</div>
+      <div className="text-6xl mb-6">✉️</div>
       <h2 className="text-3xl font-bold text-gray-900 mb-4">Check your email</h2>
       <p className="text-gray-600 mb-6">
         We've sent a verification link to <strong>{email}</strong>. Click the link to confirm
@@ -776,7 +776,7 @@ function EmailVerificationScreen({ email }) {
         href="/login"
         className="text-brand-600 hover:text-brand-700 font-medium"
       >
-        â Back to login
+        ← Back to login
       </a>
     </div>
   );
@@ -919,15 +919,15 @@ export default function LoginPage() {
             <h3 className="text-2xl font-bold mb-4">Boost your Google rating</h3>
             <ul className="space-y-4 text-brand-50">
               <li className="flex gap-3">
-                <span className="text-2xl flex-shrink-0">â</span>
+                <span className="text-2xl flex-shrink-0">✓</span>
                 <span>Route satisfied customers to Google</span>
               </li>
               <li className="flex gap-3">
-                <span className="text-2xl flex-shrink-0">â</span>
+                <span className="text-2xl flex-shrink-0">✓</span>
                 <span>Track review improvements weekly</span>
               </li>
               <li className="flex gap-3">
-                <span className="text-2xl flex-shrink-0">â</span>
+                <span className="text-2xl flex-shrink-0">✓</span>
                 <span>Respond to feedback in one place</span>
               </li>
             </ul>
@@ -969,7 +969,7 @@ export default function LoginPage() {
                         : "bg-gray-200 text-gray-600"
                   }`}
                 >
-                  {step.number < currentStep ? "â" : step.number}
+                  {step.number < currentStep ? "✓" : step.number}
                 </div>
                 <div className="ml-2 text-xs font-medium text-gray-600 hidden sm:inline">
                   {step.label}
