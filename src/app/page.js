@@ -215,12 +215,12 @@ export default function Home() {
             </div>
 
             <div className="flex items-center space-x-4">
-              <button className="text-gray-600 hover:text-brand-600 transition font-medium">
+              <a href="/login" className="text-gray-600 hover:text-brand-600 transition font-medium">
                 Login
-              </button>
-              <button className="bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-lg transition font-medium">
+              </a>
+              <a href="/login" className="bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-lg transition font-medium">
                 Get Started Free
-              </button>
+              </a>
             </div>
           </div>
         </div>
@@ -239,12 +239,12 @@ export default function Home() {
                 PlateRate intercepts low ratings before they hit Google and redirects happy customers to leave glowing reviews. Get more 5-star ratings while fixing problems before they go public.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 animate-fade-in-up stagger-2">
-                <button className="bg-brand-600 hover:bg-brand-700 text-white px-8 py-4 rounded-lg font-semibold transition shadow-lg hover:shadow-xl">
+                <a href="/login" className="bg-brand-600 hover:bg-brand-700 text-white px-8 py-4 rounded-lg font-semibold transition shadow-lg hover:shadow-xl text-center">
                   Get Started Free
-                </button>
-                <button className="border-2 border-brand-600 text-brand-600 hover:bg-brand-50 px-8 py-4 rounded-lg font-semibold transition">
+                </a>
+                <a href="#features" className="border-2 border-brand-600 text-brand-600 hover:bg-brand-50 px-8 py-4 rounded-lg font-semibold transition text-center">
                   See How It Works
-                </button>
+                </a>
               </div>
             </div>
 
@@ -597,15 +597,16 @@ export default function Home() {
                     )}
                   </div>
 
-                  <button
-                    className={`w-full py-3 rounded-lg font-semibold transition mb-8 ${
+                  <a
+                    href="/login"
+                    className={`block w-full py-3 rounded-lg font-semibold transition mb-8 text-center ${
                       plan.popular
                         ? 'bg-white text-brand-600 hover:bg-gray-100'
                         : 'bg-brand-600 text-white hover:bg-brand-700'
                     }`}
                   >
                     Get Started
-                  </button>
+                  </a>
 
                   <ul className="space-y-4">
                     {plan.features.map((feature, j) => (
@@ -697,24 +698,11 @@ export default function Home() {
             Get started for free. No credit card required. See results in days.
           </p>
 
-          <form onSubmit={handleEmailSubmit} className="flex gap-3 max-w-md mx-auto animate-fade-in-up stagger-2">
-            <input
-              type="email"
-              placeholder="your@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="flex-1 px-4 py-3 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-white"
-            />
-            <button
-              type="submit"
-              className="bg-white text-brand-600 hover:bg-gray-100 px-6 py-3 rounded-lg font-semibold transition"
-            >
-              {submitted ? '✓ Sent!' : 'Get Started'}
-            </button>
-          </form>
+          <a href="/login" className="inline-block bg-white text-brand-600 hover:bg-gray-100 px-8 py-4 rounded-lg font-semibold transition text-lg animate-fade-in-up stagger-2">
+            Get Started Free
+          </a>
 
-          <p className="text-brand-100 text-sm mt-4">No spam. Unsubscribe anytime.</p>
+          <p className="text-brand-100 text-sm mt-4">No credit card required.</p>
         </div>
       </section>
 
