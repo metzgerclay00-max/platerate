@@ -584,13 +584,13 @@ function SettingsPanel({ restaurant, onSave, isSaving }) {
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
         <h3 className="text-lg font-semibold text-gray-900 mb-6">
-          Restaurant Details
+          Business Details
         </h3>
 
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Restaurant Name
+              Business Name
             </label>
             <input
               type="text"

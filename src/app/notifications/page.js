@@ -232,7 +232,7 @@ export default function NotificationsPage() {
             <h2 className="text-3xl font-bold text-brand-900 mb-2">Great news!</h2>
             <p className="text-brand-600 text-lg mb-4">No low ratings to report</p>
             <p className="text-brand-500">
-              Keep up the excellent work! Your restaurant is maintaining high-quality reviews.
+              Keep up the excellent work! Your business is maintaining high-quality reviews.
             </p>
           </div>
         ) : (

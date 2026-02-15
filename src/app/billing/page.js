@@ -28,7 +28,7 @@ const plans = [
     name: 'Growth',
     price: 49,
     period: '/month',
-    description: 'For growing restaurants',
+    description: 'For growing businesses',
     locations: 3,
     reviewsPerMonth: null,
     features: [

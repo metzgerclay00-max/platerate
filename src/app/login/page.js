@@ -107,7 +107,7 @@ function AuthStep({ onSuccess, onSignupSent }) {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@restaurant.com"
+                placeholder="you@yourbusiness.com"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
                 required
               />
@@ -135,7 +135,7 @@ function AuthStep({ onSuccess, onSignupSent }) {
         <p className="text-gray-600">
           {isSignUp
             ? "Get started with PlateRate and boost your reviews"
-            : "Log in to manage your restaurant reviews"}
+            : "Log in to manage your reviews"}
         </p>
       </div>
 
@@ -146,7 +146,7 @@ function AuthStep({ onSuccess, onSignupSent }) {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@restaurant.com"
+            placeholder="you@yourbusiness.com"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
             required
           />
@@ -306,15 +306,15 @@ function RestaurantStep({ userEmail, onComplete }) {
 
   return (
     <div className="w-full max-w-2xl mx-auto">
-      <h2 className="text-3xl font-bold text-gray-900 mb-2">Your restaurant</h2>
+      <h2 className="text-3xl font-bold text-gray-900 mb-2">Your business</h2>
       <p className="text-gray-600 mb-8">
-        Tell us about your restaurant so we can set up your review tracking.
+        Tell us about your business so we can set up your review tracking.
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label className="block text-sm font-medium text-gray-900 mb-2">
-            Restaurant Name *
+            Business Name *
           </label>
           <input
             type="text"
@@ -336,7 +336,7 @@ function RestaurantStep({ userEmail, onComplete }) {
               type="text"
               value={slug}
               onChange={(e) => setSlug(e.target.value)}
-              placeholder="your-restaurant"
+              placeholder="your-business"
               className="w-full px-4 py-3 pl-40 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent font-mono text-sm"
             />
           </div>
@@ -347,18 +347,19 @@ function RestaurantStep({ userEmail, onComplete }) {
 
         <div>
           <label className="block text-sm font-medium text-gray-900 mb-2">
-            Restaurant Type *
+            Business Type *
           </label>
           <select
             value={restaurantType}
             onChange={(e) => setRestaurantType(e.target.value)}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
           >
-            <option>Casual Dining</option>
+            <option>Restaurant</option>
+            <option>Café / Coffee Shop</option>
+            <option>Bar / Brewery</option>
+            <option>Bakery</option>
+            <option>Fast Casual</option>
             <option>Fine Dining</option>
-            <option>Fast Food</option>
-            <option>Cafe</option>
-            <option>Bar</option>
             <option>Food Truck</option>
             <option>Other</option>
           </select>
@@ -376,7 +377,7 @@ function RestaurantStep({ userEmail, onComplete }) {
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent text-sm"
           />
           <p className="text-gray-500 text-xs mt-2">
-            Find this by searching your restaurant on Google Maps, then copy the URL.
+            Find this by searching your business on Google Maps, then copy the URL.
           </p>
         </div>
 
@@ -400,7 +401,7 @@ function RestaurantStep({ userEmail, onComplete }) {
           disabled={loading}
           className="w-full bg-brand-600 text-white py-3 rounded-lg font-medium hover:bg-brand-700 disabled:opacity-50 transition-colors"
         >
-          {loading ? "Setting up..." : "Continue"}
+          {loading ? "Setting up your business..." : "Continue"}
         </button>
       </form>
     </div>
@@ -706,7 +707,7 @@ function SuccessStep({ restaurant, onDashboard }) {
         <div className="text-6xl mb-4">🎉</div>
         <h2 className="text-3xl font-bold text-gray-900 mb-2">You're all set!</h2>
         <p className="text-gray-600">
-          Your restaurant is ready to collect better reviews
+          Your business is ready to collect better reviews
         </p>
       </div>
 
@@ -947,7 +948,7 @@ export default function LoginPage() {
         {currentStep === "loading" ? (
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-600 mx-auto mb-4" />
-            <p className="text-gray-600">Setting up your restaurant...</p>
+            <p className="text-gray-600">Setting up your business...</p>
           </div>
         ) : (
           <SuccessStep
@@ -967,11 +968,11 @@ export default function LoginPage() {
         <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-brand-600 to-brand-800 text-white flex-col justify-between p-12">
           <div>
             <div className="text-3xl font-bold mb-2">PlateRate</div>
-            <p className="text-brand-100">Restaurant Review Management</p>
+            <p className="text-brand-100">Review Management Platform</p>
           </div>
 
           <div className="max-w-sm">
-            <h3 className="text-2xl font-bold mb-4">Boost your Google rating</h3>
+            <h3 className="text-2xl font-bold mb-4">Grow your online reputation</h3>
             <ul className="space-y-4 text-brand-50">
               <li className="flex gap-3">
                 <span className="text-2xl flex-shrink-0">✓</span>
@@ -989,7 +990,7 @@ export default function LoginPage() {
           </div>
 
           <div className="text-brand-100 text-sm">
-            Join 500+ restaurants using PlateRate
+            Join 500+ businesses using PlateRate
           </div>
         </div>
 

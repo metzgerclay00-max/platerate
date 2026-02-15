@@ -85,7 +85,7 @@ export default function Home() {
     {
       quote: "The private feedback from customers has been invaluable. We fixed our wait time process after getting consistent feedback—now it's our strongest asset. PlateRate literally pays for itself.",
       author: "Sarah Chen",
-      restaurant: "The Golden Fork, San Francisco CA",
+      restaurant: "Brewed Awakening, San Francisco CA",
       rating: 5,
     },
     {
@@ -233,7 +233,7 @@ export default function Home() {
             {/* Left content */}
             <div>
               <h1 className="text-5xl md:text-6xl font-bold text-gray-900 leading-tight animate-fade-in-up mb-6">
-                Turn Every Diner Into a <span className="text-brand-600">5-Star Review</span>
+                Turn Every Customer Into a <span className="text-brand-600">5-Star Review</span>
               </h1>
               <p className="text-xl text-gray-600 animate-fade-in-up stagger-1 mb-8 leading-relaxed">
                 PlateRate intercepts low ratings before they hit Google and redirects happy customers to leave glowing reviews. Get more 5-star ratings while fixing problems before they go public.
@@ -293,7 +293,7 @@ export default function Home() {
       <section className="py-12 px-4 sm:px-6 lg:px-8 bg-white border-y border-gray-100">
         <div className="max-w-7xl mx-auto">
           <p className="text-center text-gray-600 font-medium mb-8">
-            Trusted by 500+ restaurants nationwide
+            Trusted by 500+ restaurants & cafés nationwide
           </p>
           <div className="flex justify-center items-center flex-wrap gap-8 mb-12">
             {['Mario\'s Bistro', 'The Golden Fork', 'La Cascada', 'Ember & Sage', 'Noodle Co'].map((name, i) => (
@@ -488,7 +488,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 animate-fade-in-up">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">The PlateRate Effect</h2>
-            <p className="text-xl text-gray-600">Real results from real restaurants</p>
+            <p className="text-xl text-gray-600">Real results from real businesses</p>
           </div>
 
           <div className="grid md:grid-cols-4 gap-8">
@@ -542,7 +542,7 @@ export default function Home() {
               {
                 name: 'Growth',
                 price: '$49',
-                description: 'Most popular for growing restaurants',
+                description: 'Most popular for growing businesses',
                 features: [
                   '3 locations',
                   'Unlimited reviews',
@@ -627,7 +627,7 @@ export default function Home() {
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 animate-fade-in-up">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Loved by Restaurant Owners</h2>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Loved by Business Owners</h2>
             <p className="text-xl text-gray-600">See what customers are saying</p>
           </div>
 
@@ -715,7 +715,7 @@ export default function Home() {
                 <span className="text-2xl">🍽️</span>
                 <span className="font-bold text-white">PlateRate</span>
               </div>
-              <p className="text-sm">Turning diners into 5-star reviewers.</p>
+              <p className="text-sm">Turning customers into 5-star reviewers.</p>
             </div>
 
             <div>
