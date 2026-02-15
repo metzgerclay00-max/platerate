@@ -1,861 +1,1013 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
-function StatCard({ label, value, sub, color = "text-brand-900" }) {
+// Skeleton Loader Component
+function SkeletonLoader() {
   return (
-    <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex-1 min-w-[140px]">
-      <p className="text-gray-500 text-xs font-medium mb-1">{label}</p>
-      <p className={`text-3xl font-bold ${color}`}>{value}</p>
-      {sub && <p className="text-gray-400 text-xs mt-1">{sub}</p>}
-    </div>
-  );
-}
-
-function RatingBar({ stars, count, total }) {
-  const pct = total > 0 ? Math.round((count / total) * 100) : 0;
-  const color =
-    stars >= 4
-      ? "bg-brand-500"
-      : stars === 3
-      ? "bg-amber-400"
-      : "bg-red-400";
-  return (
-    <div className="flex items-center gap-2 mb-1.5">
-      <span className="text-xs text-gray-500 w-3 text-right">{stars}</span>
-      <svg
-        width={12}
-        height={12}
-        viewBox="0 0 24 24"
-        fill="#f59e0b"
-        stroke="none"
-      >
-        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-      </svg>
-      <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
-        <div
-          className={`h-full ${color} rounded-full transition-all duration-500`}
-          style={{ width: `${pct}%` }}
-        />
+    <div className="animate-pulse space-y-6">
+      <div className="h-10 bg-gray-200 rounded-lg w-48"></div>
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+        {[...Array(5)].map((_, i) => (
+          <div
+            key={i}
+            className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 h-32"
+          >
+            <div className="h-4 bg-gray-200 rounded w-24 mb-3"></div>
+            <div className="h-8 bg-gray-200 rounded w-32"></div>
+          </div>
+        ))}
       </div>
-      <span className="text-xs text-gray-400 w-8">{pct}%</span>
     </div>
   );
 }
 
-function CategoryBadge({ category }) {
+// Stat Card Component
+function StatCard({ label, value, change, icon, trend }) {
+  const isPositive = trend === "up";
+  const trendColor = isPositive ? "text-green-600" : "text-red-600";
+  const trendBg = isPositive ? "bg-green-50" : "bg-red-50";
+
+  return (
+    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+      <div className="flex justify-between items-start mb-4">
+        <p className="text-sm font-medium text-gray-600">{label}</p>
+        {icon && <span className="text-xl">{icon}</span>}
+      </div>
+      <p className="text-3xl font-bold text-gray-900 mb-2">{value}</p>
+      {change !== undefined && (
+        <div className={`flex items-center gap-1 text-sm font-medium ${trendColor}`}>
+          <span>{isPositive ? "â" : "â"}</span>
+          <span>{Math.abs(change)}% vs last week</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// QR Code Card Component
+function QRCodeCard({ restaurant }) {
+  const [copied, setCopied] = useState(false);
+  const reviewUrl = restaurant.google_review_url || `https://platerate.app/r/${restaurant.slug}`;
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(reviewUrl)}`;
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(reviewUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleDownload = () => {
+    const link = document.createElement("a");
+    link.href = qrUrl;
+    link.download = `${restaurant.slug}-qr-code.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  return (
+    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+      <h3 className="text-lg font-semibold text-gray-900 mb-6">Share & QR Code</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="flex flex-col items-center">
+          <div className="bg-gray-50 rounded-lg p-4 mb-4">
+            <img
+              src={qrUrl}
+              alt="QR Code"
+              className="w-56 h-56"
+              loading="lazy"
+            />
+          </div>
+          <button
+            onClick={handleDownload}
+            className="w-full px-4 py-2 bg-brand-500 text-white rounded-lg hover:bg-brand-600 transition-colors font-medium"
+          >
+            Download QR Code
+          </button>
+        </div>
+        <div className="flex flex-col justify-center">
+          <p className="text-sm font-medium text-gray-600 mb-3">Review Link</p>
+          <div className="flex gap-2 mb-4">
+            <input
+              type="text"
+              value={reviewUrl}
+              readOnly
+              className="flex-1 px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900"
+            />
+            <button
+              onClick={handleCopy}
+              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                copied
+                  ? "bg-green-500 text-white"
+                  : "bg-gray-200 text-gray-900 hover:bg-gray-300"
+              }`}
+            >
+              {copied ? "Copied!" : "Copy"}
+            </button>
+          </div>
+          <div className="bg-blue-50 border border-blue-100 rounded-lg p-4">
+            <p className="text-sm font-medium text-blue-900 mb-2">Quick Share Tips</p>
+            <ul className="text-xs text-blue-800 space-y-1">
+              <li>â¢ Print on receipts and menus</li>
+              <li>â¢ Display on table tents</li>
+              <li>â¢ Share on social media</li>
+              <li>â¢ Add to email signatures</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Google Progress Tracker
+function GoogleProgressTracker({ restaurant, feedback }) {
+  if (!restaurant.google_baseline_reviews) {
+    return null;
+  }
+
+  const redirectCount = feedback.filter((f) => f.was_redirected).length;
+  const currentEstimate = restaurant.google_baseline_reviews + redirectCount;
+  const improvement = currentEstimate - restaurant.google_baseline_reviews;
+  const improvementPercent = Math.round(
+    (improvement / restaurant.google_baseline_reviews) * 100
+  );
+  const progressPercent = Math.min(
+    (improvement / (restaurant.google_baseline_reviews * 0.5)) * 100,
+    100
+  );
+
+  return (
+    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+      <h3 className="text-lg font-semibold text-gray-900 mb-6">Google Reviews Progress</h3>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div>
+          <p className="text-sm text-gray-600 mb-1">Starting Point</p>
+          <p className="text-2xl font-bold text-gray-900">
+            {restaurant.google_baseline_reviews}
+          </p>
+          <p className="text-xs text-gray-500 mt-1">
+            {restaurant.google_baseline_rating.toFixed(1)} rating
+          </p>
+        </div>
+        <div>
+          <p className="text-sm text-gray-600 mb-1">Redirected to Google</p>
+          <p className="text-2xl font-bold text-brand-600">{redirectCount}</p>
+          <p className="text-xs text-gray-500 mt-1">From PlateRate form</p>
+        </div>
+        <div>
+          <p className="text-sm text-gray-600 mb-1">Estimated Total</p>
+          <p className="text-2xl font-bold text-green-600">{currentEstimate}</p>
+          <p className="text-xs text-gray-500 mt-1">
+            +{improvementPercent}% growth
+          </p>
+        </div>
+      </div>
+      <div className="mb-4">
+        <div className="flex justify-between items-center mb-2">
+          <p className="text-sm font-medium text-gray-700">Progress to +50%</p>
+          <p className="text-sm font-bold text-gray-900">{Math.round(progressPercent)}%</p>
+        </div>
+        <div className="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
+          <div
+            className="bg-gradient-to-r from-brand-500 to-brand-600 h-full rounded-full transition-all duration-500"
+            style={{ width: `${Math.min(progressPercent, 100)}%` }}
+          ></div>
+        </div>
+      </div>
+      {improvement > 0 && (
+        <div className="bg-green-50 border border-green-100 rounded-lg p-3 text-sm">
+          <p className="text-green-900 font-medium">
+            Great momentum! You've gained {improvement} review
+            {improvement !== 1 ? "s" : ""} through PlateRate.
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Review Funnel Component
+function ReviewFunnel({ events }) {
+  const formOpens = events.filter((e) => e.event_type === "form_opened").length;
+  const ratingsSubmitted = events.filter(
+    (e) => e.event_type === "rating_submitted"
+  ).length;
+  const googleClicks = events.filter(
+    (e) => e.event_type === "google_clicked"
+  ).length;
+
+  const formToRating = formOpens > 0 ? Math.round((ratingsSubmitted / formOpens) * 100) : 0;
+  const ratingToGoogle =
+    ratingsSubmitted > 0 ? Math.round((googleClicks / ratingsSubmitted) * 100) : 0;
+
+  return (
+    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+      <h3 className="text-lg font-semibold text-gray-900 mb-6">Review Funnel</h3>
+      <div className="space-y-6">
+        <div>
+          <div className="flex justify-between items-center mb-2">
+            <p className="text-sm font-medium text-gray-700">Form Opens</p>
+            <p className="text-sm font-bold text-gray-900">{formOpens}</p>
+          </div>
+          <div className="h-12 bg-brand-500 rounded-lg"></div>
+        </div>
+
+        <div className="flex justify-center">
+          <span className="text-sm font-semibold text-gray-600">
+            {formToRating}% conversion
+          </span>
+        </div>
+
+        <div>
+          <div className="flex justify-between items-center mb-2">
+            <p className="text-sm font-medium text-gray-700">Ratings Submitted</p>
+            <p className="text-sm font-bold text-gray-900">{ratingsSubmitted}</p>
+          </div>
+          <div
+            className="h-12 bg-brand-400 rounded-lg transition-all"
+            style={{
+              width: formOpens > 0 ? `${(ratingsSubmitted / formOpens) * 100}%` : "0%",
+            }}
+          ></div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <div className="flex justify-between items-center mb-2">
+              <p className="text-sm font-medium text-gray-700">Google Clicks</p>
+              <p className="text-sm font-bold text-gray-900">{googleClicks}</p>
+            </div>
+            <div
+              className="h-10 bg-green-500 rounded-lg transition-all"
+              style={{
+                width:
+                  ratingsSubmitted > 0
+                    ? `${(googleClicks / ratingsSubmitted) * 100}%`
+                    : "0%",
+              }}
+            ></div>
+            <p className="text-xs text-gray-500 mt-2">
+              {ratingToGoogle}% of submissions
+            </p>
+          </div>
+          <div>
+            <div className="flex justify-between items-center mb-2">
+              <p className="text-sm font-medium text-gray-700">Private Feedback</p>
+              <p className="text-sm font-bold text-gray-900">
+                {ratingsSubmitted - googleClicks}
+              </p>
+            </div>
+            <div
+              className="h-10 bg-blue-500 rounded-lg transition-all"
+              style={{
+                width:
+                  ratingsSubmitted > 0
+                    ? `${((ratingsSubmitted - googleClicks) / ratingsSubmitted) * 100}%`
+                    : "0%",
+              }}
+            ></div>
+            <p className="text-xs text-gray-500 mt-2">
+              {100 - ratingToGoogle}% of submissions
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Category Breakdown Component
+function CategoryBreakdown({ feedback }) {
+  const categoryMap = {
+    Food: 0,
+    Service: 0,
+    "Wait Time": 0,
+    Cleanliness: 0,
+    Other: 0,
+  };
+
+  feedback.forEach((item) => {
+    if (item.categories && Array.isArray(item.categories)) {
+      item.categories.forEach((cat) => {
+        if (categoryMap.hasOwnProperty(cat)) {
+          categoryMap[cat]++;
+        }
+      });
+    }
+  });
+
+  const total = Object.values(categoryMap).reduce((a, b) => a + b, 0);
+  if (total === 0) return null;
+
+  const categories = [
+    { key: "Food", icon: "ð½ï¸" },
+    { key: "Service", icon: "ð¤" },
+    { key: "Wait Time", icon: "â±ï¸" },
+    { key: "Cleanliness", icon: "â¨" },
+    { key: "Other", icon: "ð­" },
+  ];
+
   const colors = {
-    Food: "bg-orange-100 text-orange-700",
-    Service: "bg-blue-100 text-blue-700",
-    "Wait Time": "bg-purple-100 text-purple-700",
-    Cleanliness: "bg-green-100 text-green-700",
-    Other: "bg-gray-100 text-gray-700",
+    Food: "bg-orange-500",
+    Service: "bg-blue-500",
+    "Wait Time": "bg-purple-500",
+    Cleanliness: "bg-pink-500",
+    Other: "bg-gray-500",
   };
-  return (
-    <span
-      className={`inline-block px-2 py-1 rounded-md text-xs font-medium ${
-        colors[category] || colors.Other
-      }`}
-    >
-      {category}
-    </span>
-  );
-}
-
-function CategoryBar({ category, count, total }) {
-  const pct = total > 0 ? Math.round((count / total) * 100) : 0;
-  const colorMap = {
-    Food: "bg-orange-400",
-    Service: "bg-blue-400",
-    "Wait Time": "bg-purple-400",
-    Cleanliness: "bg-green-400",
-    Other: "bg-gray-400",
-  };
-  const color = colorMap[category] || colorMap.Other;
 
   return (
-    <div className="flex items-center gap-3 mb-3">
-      <span className="text-sm text-gray-600 font-medium w-24">{category}</span>
-      <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
-        <div
-          className={`h-full ${color} rounded-full transition-all duration-500`}
-          style={{ width: `${pct}%` }}
-        />
+    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+      <h3 className="text-lg font-semibold text-gray-900 mb-6">
+        Feedback Categories
+      </h3>
+      <div className="space-y-4">
+        {categories.map((cat) => {
+          const count = categoryMap[cat.key];
+          const percent = Math.round((count / total) * 100) || 0;
+          return (
+            <div key={cat.key}>
+              <div className="flex justify-between items-center mb-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">{cat.icon}</span>
+                  <span className="text-sm font-medium text-gray-700">
+                    {cat.key}
+                  </span>
+                </div>
+                <span className="text-sm font-bold text-gray-900">
+                  {count} ({percent}%)
+                </span>
+              </div>
+              <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
+                <div
+                  className={`${colors[cat.key]} h-full rounded-full transition-all`}
+                  style={{ width: `${percent}%` }}
+                ></div>
+              </div>
+            </div>
+          );
+        })}
       </div>
-      <span className="text-sm text-gray-600 font-semibold w-12 text-right">
-        {count}
-      </span>
     </div>
   );
 }
 
-export default function DashboardPage() {
+// Rating Distribution Component
+function RatingDistribution({ feedback }) {
+  const distribution = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+  feedback.forEach((item) => {
+    if (item.rating >= 1 && item.rating <= 5) {
+      distribution[item.rating]++;
+    }
+  });
+
+  const total = feedback.length || 1;
+  const avgRating =
+    feedback.reduce((sum, item) => sum + (item.rating || 0), 0) / total || 0;
+
+  const colors = {
+    5: "bg-green-500",
+    4: "bg-green-400",
+    3: "bg-amber-500",
+    2: "bg-red-400",
+    1: "bg-red-600",
+  };
+
+  return (
+    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+      <div className="flex justify-between items-start mb-6">
+        <h3 className="text-lg font-semibold text-gray-900">Rating Distribution</h3>
+        <div className="text-right">
+          <p className="text-3xl font-bold text-gray-900">
+            {avgRating.toFixed(1)}
+          </p>
+          <p className="text-sm text-gray-600">Average rating</p>
+        </div>
+      </div>
+      <div className="space-y-3">
+        {[5, 4, 3, 2, 1].map((rating) => {
+          const count = distribution[rating];
+          const percent = Math.round((count / total) * 100) || 0;
+          return (
+            <div key={rating} className="flex items-center gap-3">
+              <span className="w-6 text-right text-sm font-medium text-gray-600">
+                {rating}
+              </span>
+              <span className="text-lg">{"â­".repeat(rating)}</span>
+              <div className="flex-1 bg-gray-100 rounded-full h-2 overflow-hidden">
+                <div
+                  className={`${colors[rating]} h-full rounded-full transition-all`}
+                  style={{ width: `${percent}%` }}
+                ></div>
+              </div>
+              <span className="w-12 text-right text-sm font-medium text-gray-900">
+                {percent}%
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// Recent Activity Feed Component
+function RecentActivityFeed({ feedback }) {
+  const [filter, setFilter] = useState("all");
+
+  const getStarColor = (rating) => {
+    if (rating >= 4) return "text-green-600";
+    if (rating === 3) return "text-amber-600";
+    return "text-red-600";
+  };
+
+  const getInitial = (name) => {
+    return (name || "A").charAt(0).toUpperCase();
+  };
+
+  const filtered =
+    filter === "all"
+      ? feedback
+      : filter === "positive"
+        ? feedback.filter((f) => f.rating >= 4)
+        : filter === "needs-attention"
+          ? feedback.filter((f) => f.rating < 3)
+          : filter === "google"
+            ? feedback.filter((f) => f.was_redirected)
+            : feedback;
+
+  if (feedback.length === 0) {
+    return (
+      <div className="bg-white rounded-2xl p-12 shadow-sm border border-gray-100 text-center">
+        <div className="text-6xl mb-4">ð</div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          No feedback yet
+        </h3>
+        <p className="text-sm text-gray-600">
+          Reviews will appear here as customers submit them
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+      <h3 className="text-lg font-semibold text-gray-900 mb-6">Recent Activity</h3>
+
+      <div className="flex gap-2 mb-6 border-b border-gray-200">
+        {[
+          { id: "all", label: "All" },
+          { id: "positive", label: "Positive" },
+          { id: "needs-attention", label: "Needs Attention" },
+          { id: "google", label: "Google Reviews" },
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setFilter(tab.id)}
+            className={`px-4 py-3 text-sm font-medium transition-colors border-b-2 -mb-1 ${
+              filter === tab.id
+                ? "border-brand-500 text-brand-600"
+                : "border-transparent text-gray-600 hover:text-gray-900"
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="space-y-4">
+        {filtered.slice(0, 8).map((item) => (
+          <div
+            key={item.id}
+            className="border border-gray-100 rounded-lg p-4 hover:bg-gray-50 transition-colors"
+          >
+            <div className="flex gap-4">
+              <div className="flex-shrink-0">
+                <div className="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center">
+                  <span className="text-sm font-bold text-brand-600">
+                    {getInitial(item.customer_name)}
+                  </span>
+                </div>
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between gap-2 mb-1">
+                  <p className="font-medium text-gray-900 truncate">
+                    {item.customer_name || "Anonymous"}
+                  </p>
+                  <span className="text-xs text-gray-500 flex-shrink-0">
+                    {new Date(item.created_at).toLocaleDateString()}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className={`text-sm ${getStarColor(item.rating)}`}>
+                    {"â­".repeat(item.rating)}
+                  </span>
+                  {item.was_redirected && (
+                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                      Google
+                    </span>
+                  )}
+                  {!item.was_redirected && (
+                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+                      Feedback
+                    </span>
+                  )}
+                </div>
+                {item.comment && (
+                  <p className="text-sm text-gray-600 line-clamp-2">
+                    {item.comment}
+                  </p>
+                )}
+                {item.categories && item.categories.length > 0 && (
+                  <div className="flex gap-1 mt-2 flex-wrap">
+                    {item.categories.slice(0, 3).map((cat) => (
+                      <span
+                        key={cat}
+                        className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700"
+                      >
+                        {cat}
+                      </span>
+                    ))}
+                    {item.categories.length > 3 && (
+                      <span className="text-xs text-gray-500">
+                        +{item.categories.length - 3} more
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {filtered.length > 8 && (
+        <button className="w-full mt-4 px-4 py-2 text-brand-600 font-medium hover:text-brand-700 transition-colors">
+          View all ({filtered.length})
+        </button>
+      )}
+    </div>
+  );
+}
+
+// Settings Panel Component
+function SettingsPanel({ restaurant, onSave, isSaving }) {
+  const [formData, setFormData] = useState({
+    name: restaurant.name || "",
+    google_review_url: restaurant.google_review_url || "",
+    rating_threshold: restaurant.rating_threshold || 3,
+    alert_email: restaurant.alert_email || "",
+    google_baseline_reviews: restaurant.google_baseline_reviews || 0,
+    google_baseline_rating: restaurant.google_baseline_rating || 0,
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]:
+        name.includes("rating") || name.includes("reviews")
+          ? parseFloat(value)
+          : value,
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSave(formData);
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+        <h3 className="text-lg font-semibold text-gray-900 mb-6">
+          Restaurant Details
+        </h3>
+
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Restaurant Name
+            </label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Google Review URL
+            </label>
+            <input
+              type="url"
+              name="google_review_url"
+              value={formData.google_review_url}
+              onChange={handleChange}
+              placeholder="https://g.page/..."
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Rating Threshold for Alerts
+            </label>
+            <select
+              name="rating_threshold"
+              value={formData.rating_threshold}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+            >
+              <option value="1">1+ Stars</option>
+              <option value="2">2+ Stars</option>
+              <option value="3">3+ Stars</option>
+              <option value="4">4+ Stars</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Alert Email
+            </label>
+            <input
+              type="email"
+              name="alert_email"
+              value={formData.alert_email}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+        <h3 className="text-lg font-semibold text-gray-900 mb-6">
+          Google Baseline
+        </h3>
+        <p className="text-sm text-gray-600 mb-4">
+          Set your starting point to track progress on Google Reviews
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Baseline Review Count
+            </label>
+            <input
+              type="number"
+              name="google_baseline_reviews"
+              value={formData.google_baseline_reviews}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Baseline Rating
+            </label>
+            <input
+              type="number"
+              name="google_baseline_rating"
+              value={formData.google_baseline_rating}
+              onChange={handleChange}
+              step="0.1"
+              min="0"
+              max="5"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+            />
+          </div>
+        </div>
+      </div>
+
+      <button
+        type="submit"
+        disabled={isSaving}
+        className="w-full px-6 py-3 bg-brand-600 text-white font-medium rounded-lg hover:bg-brand-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        {isSaving ? "Saving..." : "Save Settings"}
+      </button>
+    </form>
+  );
+}
+
+// Main Dashboard Component
+export default function Dashboard() {
   const router = useRouter();
   const [user, setUser] = useState(null);
   const [restaurant, setRestaurant] = useState(null);
   const [feedback, setFeedback] = useState([]);
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [tab, setTab] = useState("all"); // all | negative | positive
-  const [copied, setCopied] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
-
-  // Settings state
-  const [editName, setEditName] = useState("");
-  const [editGoogleUrl, setEditGoogleUrl] = useState("");
-  const [editThreshold, setEditThreshold] = useState(4);
-  const [editAlertEmail, setEditAlertEmail] = useState("");
-  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState("overview");
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveMessage, setSaveMessage] = useState("");
 
   useEffect(() => {
-    async function load() {
-      const {
-        data: { user: currentUser },
-      } = await supabase.auth.getUser();
-      if (!currentUser) {
-        router.push("/login");
-        return;
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+
+        // Get current user
+        const {
+          data: { user: currentUser },
+          error: userError,
+        } = await supabase.auth.getUser();
+        if (userError || !currentUser) {
+          router.push("/login");
+          return;
+        }
+        setUser(currentUser);
+
+        // Get restaurant data
+        const { data: restaurantData, error: restError } = await supabase
+          .from("restaurants")
+          .select("*")
+          .eq("owner_id", currentUser.id)
+          .single();
+
+        if (restError || !restaurantData) {
+          router.push("/login");
+          return;
+        }
+        setRestaurant(restaurantData);
+
+        // Get feedback data
+        const { data: feedbackData, error: feedError } = await supabase
+          .from("feedback")
+          .select("*")
+          .eq("restaurant_id", restaurantData.id)
+          .order("created_at", { ascending: false });
+
+        if (!feedError && feedbackData) {
+          setFeedback(feedbackData);
+        }
+
+        // Get events data
+        const { data: eventsData, error: eventsError } = await supabase
+          .from("events")
+          .select("event_type")
+          .eq("restaurant_id", restaurantData.id);
+
+        if (!eventsError && eventsData) {
+          setEvents(eventsData);
+        }
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
       }
-      setUser(currentUser);
+    };
 
-      const { data: rest } = await supabase
-        .from("restaurants")
-        .select("*")
-        .eq("owner_id", currentUser.id)
-        .single();
-
-      if (!rest) {
-        router.push("/login");
-        return;
-      }
-
-      setRestaurant(rest);
-      setEditName(rest.name);
-      setEditGoogleUrl(rest.google_review_url || "");
-      setEditThreshold(rest.rating_threshold || 4);
-      setEditAlertEmail(rest.alert_email || "");
-
-      const { data: fb } = await supabase
-        .from("feedback")
-        .select("*")
-        .eq("restaurant_id", rest.id)
-        .order("created_at", { ascending: false });
-
-      setFeedback(fb || []);
-
-      // Load events for funnel tracking
-      const { data: ev } = await supabase
-        .from("events")
-        .select("event_type")
-        .eq("restaurant_id", rest.id);
-
-      setEvents(ev || []);
-      setLoading(false);
-    }
-    load();
+    fetchData();
   }, [router]);
 
-  async function handleSignOut() {
+  const handleSaveSettings = async (formData) => {
+    try {
+      setIsSaving(true);
+      const { error } = await supabase
+        .from("restaurants")
+        .update(formData)
+        .eq("id", restaurant.id);
+
+      if (error) throw error;
+
+      setRestaurant((prev) => ({ ...prev, ...formData }));
+      setSaveMessage("Settings saved successfully!");
+      setTimeout(() => setSaveMessage(""), 3000);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleSignOut = async () => {
     await supabase.auth.signOut();
-    router.push("/");
-  }
-
-  async function handleSaveSettings(e) {
-    e.preventDefault();
-    setSaving(true);
-    const { data } = await supabase
-      .from("restaurants")
-      .update({
-        name: editName.trim(),
-        google_review_url: editGoogleUrl.trim(),
-        rating_threshold: editThreshold,
-        alert_email: editAlertEmail.trim(),
-      })
-      .eq("id", restaurant.id)
-      .select()
-      .single();
-
-    if (data) setRestaurant(data);
-    setSaving(false);
-    setShowSettings(false);
-  }
-
-  function copyLink() {
-    const link = `${window.location.origin}/r/${restaurant.slug}`;
-    navigator.clipboard.writeText(link);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  }
-
-  async function downloadQRCode() {
-    const link = `${window.location.origin}/r/${restaurant.slug}`;
-    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(
-      link
-    )}`;
-
-    const a = document.createElement("a");
-    a.href = qrUrl;
-    a.download = `${restaurant.slug}-qr-code.png`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-  }
+    router.push("/login");
+  };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-brand-200 border-t-brand-500 rounded-full animate-spin" />
+      <div className="min-h-screen bg-gray-50 p-6">
+        <SkeletonLoader />
       </div>
     );
   }
 
-  // Compute stats
-  const totalFeedback = feedback.length;
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-6">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
+          Error: {error}
+        </div>
+      </div>
+    );
+  }
+
+  if (!user || !restaurant) {
+    return null;
+  }
+
+  const thisWeekFeedback = feedback.filter((f) => {
+    const feedbackDate = new Date(f.created_at);
+    const weekAgo = new Date();
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    return feedbackDate >= weekAgo;
+  });
+
+  const thisWeekEvents = events.filter((e) => {
+    const eventDate = new Date(e.created_at);
+    const weekAgo = new Date();
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    return eventDate >= weekAgo;
+  });
+
+  const lastWeekFeedback = feedback.filter((f) => {
+    const feedbackDate = new Date(f.created_at);
+    const twoWeeksAgo = new Date();
+    const weekAgo = new Date();
+    twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    return feedbackDate >= twoWeeksAgo && feedbackDate < weekAgo;
+  });
+
+  const reviewChange =
+    lastWeekFeedback.length > 0
+      ? Math.round(
+          ((thisWeekFeedback.length - lastWeekFeedback.length) /
+            lastWeekFeedback.length) *
+            100
+        )
+      : thisWeekFeedback.length > 0
+        ? 100
+        : 0;
+
   const avgRating =
-    totalFeedback > 0
-      ? (
-          feedback.reduce((sum, f) => sum + f.rating, 0) / totalFeedback
-        ).toFixed(1)
-      : "—";
+    feedback.reduce((sum, f) => sum + (f.rating || 0), 0) / (feedback.length || 1) ||
+    0;
+
   const googleRedirects = feedback.filter((f) => f.was_redirected).length;
-  const privateFeedback = feedback.filter((f) => !f.was_redirected).length;
-  const ratingCounts = [0, 0, 0, 0, 0];
-  feedback.forEach((f) => {
-    ratingCounts[f.rating - 1]++;
-  });
+  const redirectPercent =
+    feedback.length > 0 ? Math.round((googleRedirects / feedback.length) * 100) : 0;
 
-  // Week stats
-  const weekAgo = new Date();
-  weekAgo.setDate(weekAgo.getDate() - 7);
-  const weekFeedback = feedback.filter(
-    (f) => new Date(f.created_at) > weekAgo
-  );
-
-  // Filter
-  const filtered =
-    tab === "all"
-      ? feedback
-      : tab === "negative"
-      ? feedback.filter((f) => f.rating < (restaurant.rating_threshold || 4))
-      : feedback.filter((f) => f.rating >= (restaurant.rating_threshold || 4));
-
-  // Category breakdown
-  const categoryCount = {};
-  const categoryNames = ["Food", "Service", "Wait Time", "Cleanliness", "Other"];
-  categoryNames.forEach((cat) => {
-    categoryCount[cat] = 0;
-  });
-  feedback.forEach((f) => {
-    if (f.categories && Array.isArray(f.categories)) {
-      f.categories.forEach((cat) => {
-        if (categoryCount.hasOwnProperty(cat)) {
-          categoryCount[cat]++;
-        }
-      });
-    }
-  });
-  const totalCategoryMentions = Object.values(categoryCount).reduce(
-    (a, b) => a + b,
-    0
-  );
-
-  // Funnel tracking
-  const eventCounts = {};
-  const eventTypes = [
-    "form_opened",
-    "rating_submitted",
-    "google_clicked",
-    "feedback_submitted",
-  ];
-  eventTypes.forEach((type) => {
-    eventCounts[type] = events.filter((e) => e.event_type === type).length;
-  });
-
-  // Google baseline
-  const googleImprovement = feedback.filter((f) => f.was_redirected).length;
-  const baselineDate = restaurant.google_baseline_date
-    ? new Date(restaurant.google_baseline_date).toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      })
-    : null;
-
-  const reviewLink = `${typeof window !== "undefined" ? window.location.origin : ""}/r/${restaurant.slug}`;
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(
-    reviewLink
-  )}`;
+  const formOpens = events.filter((e) => e.event_type === "form_opened").length;
+  const ratingsSubmitted = events.filter(
+    (e) => e.event_type === "rating_submitted"
+  ).length;
+  const responseRate =
+    formOpens > 0 ? Math.round((ratingsSubmitted / formOpens) * 100) : 0;
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-gradient-to-r from-brand-900 to-brand-800 px-4 sm:px-8 py-4">
-        <div className="max-w-5xl mx-auto flex items-center justify-between">
+      <header className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-gradient-to-br from-brand-500 to-brand-300 rounded-lg flex items-center justify-center text-lg">
-              🍽️
+            <div className="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-lg">â­</span>
             </div>
-            <div>
-              <span className="text-white font-bold text-lg">PlateRate</span>
-              <span className="text-indigo-300 text-sm ml-3 hidden sm:inline">
-                {restaurant.name}
-              </span>
-            </div>
+            <h1 className="text-xl font-bold text-gray-900">PlateRate</h1>
           </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setShowSettings(!showSettings)}
-              className="px-4 py-2 rounded-lg border border-white/20 bg-white/10 text-white text-sm hover:bg-white/20 transition-colors"
-            >
-              Settings
+
+          <div className="flex items-center gap-6">
+            <span className="text-sm font-medium text-gray-700">
+              {restaurant.name}
+            </span>
+
+            <button className="relative p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+              <span className="text-xl">ð</span>
+              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
             </button>
+
+            <div className="border-l border-gray-200"></div>
+
             <button
               onClick={handleSignOut}
-              className="px-4 py-2 rounded-lg border border-white/20 bg-white/10 text-white text-sm hover:bg-white/20 transition-colors"
+              className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
             >
               Sign Out
             </button>
           </div>
         </div>
+
+        {/* Navigation Tabs */}
+        <div className="max-w-7xl mx-auto px-6 flex gap-8 border-t border-gray-200">
+          {[
+            { id: "overview", label: "Overview" },
+            { id: "analytics", label: "Analytics" },
+            { id: "settings", label: "Settings" },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`py-4 px-2 text-sm font-medium border-b-2 transition-colors ${
+                activeTab === tab.id
+                  ? "border-brand-600 text-brand-600"
+                  : "border-transparent text-gray-600 hover:text-gray-900"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-4 sm:px-8 py-8">
-        {/* Settings panel */}
-        {showSettings && (
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6">
-            <h2 className="text-lg font-bold text-brand-900 mb-4">
-              Settings
-            </h2>
-            <form onSubmit={handleSaveSettings} className="space-y-4">
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Restaurant name
-                  </label>
-                  <input
-                    type="text"
-                    value={editName}
-                    onChange={(e) => setEditName(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 text-sm outline-none focus:border-brand-400"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Google Reviews URL
-                  </label>
-                  <input
-                    type="url"
-                    value={editGoogleUrl}
-                    onChange={(e) => setEditGoogleUrl(e.target.value)}
-                    placeholder="https://g.page/r/your-restaurant/review"
-                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 text-sm outline-none focus:border-brand-400"
-                  />
-                </div>
-              </div>
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Redirect threshold (stars and above go to Google)
-                  </label>
-                  <select
-                    value={editThreshold}
-                    onChange={(e) => setEditThreshold(Number(e.target.value))}
-                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 text-sm outline-none focus:border-brand-400"
-                  >
-                    <option value={3}>3+ stars → Google</option>
-                    <option value={4}>4+ stars → Google (recommended)</option>
-                    <option value={5}>5 stars only → Google</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Alert Email (low ratings)
-                  </label>
-                  <input
-                    type="email"
-                    value={editAlertEmail}
-                    onChange={(e) => setEditAlertEmail(e.target.value)}
-                    placeholder="your@email.com"
-                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 text-sm outline-none focus:border-brand-400"
-                  />
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <button
-                  type="submit"
-                  disabled={saving}
-                  className="px-6 py-2.5 rounded-xl bg-brand-500 text-white font-semibold text-sm hover:bg-brand-600 transition-colors disabled:opacity-50"
-                >
-                  {saving ? "Saving..." : "Save Changes"}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowSettings(false)}
-                  className="px-6 py-2.5 rounded-xl bg-gray-100 text-gray-600 font-semibold text-sm hover:bg-gray-200 transition-colors"
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-6 py-8">
+        {saveMessage && (
+          <div className="mb-6 bg-green-50 border border-green-200 rounded-lg p-4 text-green-700">
+            {saveMessage}
           </div>
         )}
 
-        {/* Review link card */}
-        <div className="bg-gradient-to-r from-brand-900 to-brand-800 rounded-2xl p-6 mb-6 text-white">
-          <p className="text-indigo-200 text-sm font-medium mb-2">
-            Your review link — copy this and text it to customers after their
-            visit
-          </p>
-          <div className="flex items-center gap-3">
-            <code className="flex-1 bg-white/10 rounded-xl px-4 py-3 text-sm font-mono truncate">
-              {reviewLink}
-            </code>
-            <button
-              onClick={copyLink}
-              className="px-5 py-3 rounded-xl bg-white text-brand-600 font-semibold text-sm hover:bg-brand-50 transition-colors whitespace-nowrap"
-            >
-              {copied ? "Copied!" : "Copy Link"}
-            </button>
-          </div>
-        </div>
-
-        {/* QR Code & Links card */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6">
-          <h2 className="text-lg font-bold text-brand-900 mb-5">
-            QR Code & Links
-          </h2>
-          <div className="grid sm:grid-cols-2 gap-6">
-            <div className="flex flex-col items-center">
-              <img
-                src={qrUrl}
-                alt="QR Code"
-                className="w-64 h-64 border-2 border-gray-200 rounded-xl"
+        {activeTab === "overview" && (
+          <div className="space-y-8">
+            {/* Top Stats Row */}
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+              <StatCard
+                label="Total Reviews"
+                value={feedback.length}
+                change={reviewChange}
+                trend={reviewChange >= 0 ? "up" : "down"}
+                icon="ð"
               />
-              <button
-                onClick={downloadQRCode}
-                className="mt-4 px-5 py-2.5 rounded-xl bg-brand-500 text-white font-semibold text-sm hover:bg-brand-600 transition-colors"
-              >
-                Download QR Code
-              </button>
+              <StatCard
+                label="Average Rating"
+                value={avgRating.toFixed(1)}
+                icon="â­"
+              />
+              <StatCard
+                label="Google Redirects"
+                value={`${googleRedirects}`}
+                change={redirectPercent}
+                trend="up"
+                icon="ð"
+              />
+              <StatCard
+                label="Response Rate"
+                value={`${responseRate}%`}
+                icon="ð"
+              />
+              <StatCard
+                label="This Week"
+                value={thisWeekFeedback.length}
+                icon="ð"
+              />
             </div>
-            <div className="flex flex-col justify-center">
-              <p className="text-sm text-gray-600 mb-4">
-                Share this QR code with customers to let them quickly access
-                your review form. Perfect for printing on receipts, menus, or
-                table tents.
-              </p>
-              <div className="bg-gray-50 rounded-xl p-4 mb-4">
-                <p className="text-xs text-gray-500 font-medium mb-2">
-                  Your Review Link
-                </p>
-                <code className="text-sm text-gray-700 break-all">
-                  {reviewLink}
-                </code>
-              </div>
-              <button
-                onClick={copyLink}
-                className="px-5 py-2.5 rounded-xl border-2 border-brand-300 bg-brand-50 text-brand-600 font-semibold text-sm hover:bg-brand-100 transition-colors"
-              >
-                {copied ? "Copied!" : "Copy Link"}
-              </button>
-            </div>
-          </div>
-        </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-          <StatCard
-            label="Total Responses"
-            value={totalFeedback}
-            sub={`${weekFeedback.length} this week`}
-          />
-          <StatCard
-            label="Avg Rating"
-            value={avgRating}
-            color="text-amber-500"
-          />
-          <StatCard
-            label="→ Google"
-            value={googleRedirects}
-            sub={`${Math.round(
-              totalFeedback > 0 ? (googleRedirects / totalFeedback) * 100 : 0
-            )}% of total`}
-            color="text-brand-500"
-          />
-          <StatCard
-            label="Private Feedback"
-            value={privateFeedback}
-            color="text-amber-500"
-          />
-        </div>
+            {/* QR Code Section */}
+            <QRCodeCard restaurant={restaurant} />
 
-        {/* Google Progress card (if baseline exists) */}
-        {restaurant.google_baseline_reviews !== null && (
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6">
-            <h2 className="text-lg font-bold text-brand-900 mb-4">
-              Google Progress
-            </h2>
-            <div className="grid sm:grid-cols-2 gap-6">
-              <div>
-                <p className="text-sm text-gray-600 mb-2">Starting Point</p>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-bold text-brand-900">
-                    {restaurant.google_baseline_reviews}
-                  </span>
-                  <span className="text-gray-500 text-sm">reviews</span>
-                </div>
-                <div className="flex items-center gap-1 mt-2">
-                  <span className="text-2xl font-bold text-amber-500">
-                    {parseFloat(restaurant.google_baseline_rating || 0).toFixed(1)}
-                  </span>
-                  <span className="text-gray-500 text-sm">stars</span>
-                </div>
-                <p className="text-xs text-gray-400 mt-2">
-                  as of {baselineDate}
-                </p>
+            {/* Google Progress Tracker */}
+            {restaurant.google_baseline_reviews && (
+              <GoogleProgressTracker restaurant={restaurant} feedback={feedback} />
+            )}
+
+            {/* Two Column Layout */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Left Column */}
+              <div className="space-y-8">
+                <ReviewFunnel events={events} />
+                {feedback.length > 0 && (
+                  <RatingDistribution feedback={feedback} />
+                )}
               </div>
-              <div>
-                <p className="text-sm text-gray-600 mb-2">Improvement via PlateRate</p>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-bold text-green-600">
-                    +{googleImprovement}
-                  </span>
-                  <span className="text-gray-500 text-sm">reviews redirected</span>
-                </div>
-                <div className="mt-4 p-3 bg-green-50 rounded-lg">
-                  <p className="text-xs text-green-700 font-medium">
-                    {googleImprovement > 0
-                      ? `You've added ${googleImprovement} review${
-                          googleImprovement !== 1 ? "s" : ""
-                        } to Google!`
-                      : "Start collecting positive feedback to boost your Google presence."}
-                  </p>
-                </div>
+
+              {/* Right Column */}
+              <div className="space-y-8">
+                {feedback.length > 0 && (
+                  <CategoryBreakdown feedback={feedback} />
+                )}
               </div>
             </div>
+
+            {/* Recent Activity Feed */}
+            <RecentActivityFeed feedback={feedback} />
           </div>
         )}
 
-        {/* Review Funnel */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6">
-          <h2 className="text-lg font-bold text-brand-900 mb-5">
-            Review Funnel
-          </h2>
-          <div className="space-y-4">
-            <div className="flex items-center gap-4">
-              <div className="w-32">
-                <p className="text-sm font-medium text-gray-700 mb-1">
-                  Form Opens
-                </p>
-                <p className="text-2xl font-bold text-brand-900">
-                  {eventCounts.form_opened || 0}
-                </p>
-              </div>
-              <div className="flex-shrink-0 text-gray-300 text-2xl">→</div>
-            </div>
-
-            {eventCounts.form_opened > 0 && (
-              <div className="ml-4 pb-4 border-l-2 border-gray-200 pl-4">
-                <p className="text-xs text-gray-500 mb-2">Conversion Rate</p>
-                <div className="h-1 bg-gray-100 rounded-full overflow-hidden w-32">
-                  <div
-                    className="h-full bg-brand-400 rounded-full"
-                    style={{
-                      width: `${
-                        eventCounts.form_opened > 0
-                          ? Math.round(
-                              (eventCounts.rating_submitted /
-                                eventCounts.form_opened) *
-                                100
-                            )
-                          : 0
-                      }%`,
-                    }}
-                  />
-                </div>
-                <p className="text-xs text-gray-600 mt-1 font-semibold">
-                  {eventCounts.form_opened > 0
-                    ? Math.round(
-                        (eventCounts.rating_submitted /
-                          eventCounts.form_opened) *
-                          100
-                      )
-                    : 0}
-                  %
-                </p>
-              </div>
-            )}
-
-            <div className="flex items-center gap-4">
-              <div className="w-32">
-                <p className="text-sm font-medium text-gray-700 mb-1">
-                  Ratings Submitted
-                </p>
-                <p className="text-2xl font-bold text-brand-900">
-                  {eventCounts.rating_submitted || 0}
-                </p>
-              </div>
-              <div className="flex-shrink-0 text-gray-300 text-2xl">→</div>
-            </div>
-
-            {eventCounts.rating_submitted > 0 && (
-              <div className="ml-4 pb-4 border-l-2 border-gray-200 pl-4">
-                <p className="text-xs text-gray-500 mb-2">Split Between:</p>
-                <div className="space-y-2">
-                  <div>
-                    <p className="text-xs text-gray-600 font-medium mb-1">
-                      Google ({eventCounts.google_clicked || 0})
-                    </p>
-                    <div className="h-1 bg-gray-100 rounded-full overflow-hidden w-32">
-                      <div
-                        className="h-full bg-blue-400 rounded-full"
-                        style={{
-                          width: `${
-                            eventCounts.rating_submitted > 0
-                              ? Math.round(
-                                  (eventCounts.google_clicked /
-                                    eventCounts.rating_submitted) *
-                                    100
-                                )
-                              : 0
-                          }%`,
-                        }}
-                      />
-                    </div>
-                    <p className="text-xs text-gray-600 mt-1">
-                      {eventCounts.rating_submitted > 0
-                        ? Math.round(
-                            (eventCounts.google_clicked /
-                              eventCounts.rating_submitted) *
-                              100
-                          )
-                        : 0}
-                      %
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-600 font-medium mb-1">
-                      Private Feedback ({eventCounts.feedback_submitted || 0})
-                    </p>
-                    <div className="h-1 bg-gray-100 rounded-full overflow-hidden w-32">
-                      <div
-                        className="h-full bg-amber-400 rounded-full"
-                        style={{
-                          width: `${
-                            eventCounts.rating_submitted > 0
-                              ? Math.round(
-                                  (eventCounts.feedback_submitted /
-                                    eventCounts.rating_submitted) *
-                                    100
-                                )
-                              : 0
-                          }%`,
-                        }}
-                      />
-                    </div>
-                    <p className="text-xs text-gray-600 mt-1">
-                      {eventCounts.rating_submitted > 0
-                        ? Math.round(
-                            (eventCounts.feedback_submitted /
-                              eventCounts.rating_submitted) *
-                              100
-                          )
-                        : 0}
-                      %
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Category Breakdown */}
-        {totalCategoryMentions > 0 && (
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6">
-            <h2 className="text-lg font-bold text-brand-900 mb-5">
-              Category Breakdown
-            </h2>
-            <p className="text-sm text-gray-600 mb-4">
-              Most common feedback topics across {totalFeedback} responses
-            </p>
-            <div className="space-y-2">
-              {categoryNames.map((cat) => (
-                <CategoryBar
-                  key={cat}
-                  category={cat}
-                  count={categoryCount[cat] || 0}
-                  total={totalCategoryMentions}
-                />
-              ))}
-            </div>
+        {activeTab === "analytics" && (
+          <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 text-center">
+            <p className="text-gray-600">Analytics coming soon</p>
           </div>
         )}
 
-        {/* Rating overview */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-bold text-brand-900">
-              Rating Overview
-            </h2>
-            <span className="text-sm text-gray-400">All time</span>
-          </div>
-          <div className="flex items-center gap-6">
-            <div className="text-center">
-              <p className="text-5xl font-bold text-brand-900">{avgRating}</p>
-              <div className="flex gap-0.5 justify-center my-1">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <svg
-                    key={i}
-                    width={14}
-                    height={14}
-                    viewBox="0 0 24 24"
-                    fill={
-                      i <= Math.round(parseFloat(avgRating) || 0)
-                        ? "#f59e0b"
-                        : "#e5e7eb"
-                    }
-                    stroke="none"
-                  >
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                  </svg>
-                ))}
-              </div>
-              <p className="text-xs text-gray-400">
-                {totalFeedback} ratings
-              </p>
-            </div>
-            <div className="flex-1">
-              {[5, 4, 3, 2, 1].map((stars) => (
-                <RatingBar
-                  key={stars}
-                  stars={stars}
-                  count={ratingCounts[stars - 1]}
-                  total={totalFeedback}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Feedback list */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-          <div className="flex items-center justify-between mb-5">
-            <h2 className="text-lg font-bold text-brand-900">
-              Recent Activity
-            </h2>
-            <div className="flex gap-1">
-              {[
-                { key: "all", label: "All" },
-                { key: "negative", label: "Needs Attention" },
-                { key: "positive", label: "Positive" },
-              ].map((t) => (
-                <button
-                  key={t.key}
-                  onClick={() => setTab(t.key)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                    tab === t.key
-                      ? "bg-brand-500 text-white"
-                      : "bg-gray-100 text-gray-500 hover:bg-gray-200"
-                  }`}
-                >
-                  {t.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {filtered.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-4xl mb-3">📭</p>
-              <p className="text-gray-500 font-medium">No feedback yet</p>
-              <p className="text-gray-400 text-sm mt-1">
-                Share your review link with customers to start collecting
-                feedback
-              </p>
-            </div>
-          ) : (
-            filtered.map((item) => {
-              const date = new Date(item.created_at).toLocaleDateString(
-                "en-US",
-                { month: "short", day: "numeric" }
-              );
-              const threshold = restaurant.rating_threshold || 4;
-              const isPositive = item.rating >= threshold;
-
-              return (
-                <div
-                  key={item.id}
-                  className="flex items-start gap-4 py-4 border-b border-gray-50 last:border-0"
-                >
-                  <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0 ${
-                      isPositive
-                        ? "bg-gradient-to-br from-brand-300 to-brand-500"
-                        : "bg-gradient-to-br from-red-300 to-red-500"
-                    }`}
-                  >
-                    {(item.customer_name || "A").charAt(0).toUpperCase()}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="font-semibold text-brand-900 text-sm">
-                        {item.customer_name || "Anonymous"}
-                      </span>
-                      <div className="flex gap-0.5">
-                        {[1, 2, 3, 4, 5].map((i) => (
-                          <svg
-                            key={i}
-                            width={12}
-                            height={12}
-                            viewBox="0 0 24 24"
-                            fill={i <= item.rating ? "#f59e0b" : "#e5e7eb"}
-                            stroke="none"
-                          >
-                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                          </svg>
-                        ))}
-                      </div>
-                      <span className="text-xs text-gray-400">{date}</span>
-                    </div>
-
-                    {/* Category tags */}
-                    {item.categories && item.categories.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mb-2">
-                        {item.categories.map((cat) => (
-                          <CategoryBadge key={cat} category={cat} />
-                        ))}
-                      </div>
-                    )}
-
-                    {item.comment ? (
-                      <p className="text-gray-600 text-sm leading-relaxed">
-                        &ldquo;{item.comment}&rdquo;
-                      </p>
-                    ) : (
-                      <p className="text-gray-400 text-xs italic">
-                        Redirected to Google Reviews
-                      </p>
-                    )}
-                  </div>
-                  <div>
-                    {item.was_redirected ? (
-                      <span className="px-2.5 py-1 rounded-md bg-brand-50 text-brand-600 text-xs font-semibold">
-                        Reviewed
-                      </span>
-                    ) : (
-                      <span className="px-2.5 py-1 rounded-md bg-amber-50 text-amber-700 text-xs font-semibold">
-                        Feedback
-                      </span>
-                    )}
-                  </div>
-                </div>
-              );
-            })
-          )}
-        </div>
+        {activeTab === "settings" && (
+          <SettingsPanel
+            restaurant={restaurant}
+            onSave={handleSaveSettings}
+            isSaving={isSaving}
+          />
+        )}
       </main>
     </div>
   );

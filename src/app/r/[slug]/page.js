@@ -1,427 +1,537 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { supabase } from "@/lib/supabase";
+import { useState, useEffect } from 'react';
+import { supabase } from '@/lib/supabase';
 
-function Star({ filled, onHover, onClick, size = 48 }) {
-  return (
-    <button
-      onClick={onClick}
-      onMouseEnter={onHover}
-      className="bg-transparent border-none cursor-pointer p-1.5 transition-transform duration-150 active:scale-95"
-      style={{ transform: filled ? "scale(1.1)" : "scale(1)" }}
-      aria-label={`${size === 48 ? "Rate " : ""}${Math.round(size / 10)} stars`}
-    >
-      <svg
-        width={size}
-        height={size}
-        viewBox="0 0 24 24"
-        fill={filled ? "#f59e0b" : "none"}
-        stroke={filled ? "#f59e0b" : "#d1d5db"}
-        strokeWidth="1.5"
-      >
-        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-      </svg>
-    </button>
-  );
-}
+const CATEGORY_EMOJIS = {
+  'Food': 'ð½ï¸',
+  'Service': 'ð¤',
+  'Wait Time': 'â±ï¸',
+  'Cleanliness': 'â¨',
+  'Ambiance': 'ðµ',
+  'Value': 'ð°',
+  'Other': 'ð­',
+};
 
-function SkeletonLoader() {
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-brand-900 via-brand-800 to-brand-900 flex items-center justify-center p-5">
-      <div className="bg-white rounded-3xl p-10 sm:p-12 max-w-md w-full shadow-2xl animate-pulse">
-        <div className="w-[72px] h-[72px] bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-6" />
-        <div className="h-8 bg-gray-200 rounded-lg mb-4 w-3/4 mx-auto" />
-        <div className="h-6 bg-gray-200 rounded-lg mb-8 w-2/3 mx-auto" />
-        <div className="h-20 bg-gray-200 rounded-lg mb-6" />
-        <div className="h-12 bg-gray-200 rounded-lg" />
-      </div>
-    </div>
-  );
-}
+const RATING_FEEDBACK = {
+  1: { emoji: 'ð', label: 'Terrible' },
+  2: { emoji: 'ð', label: 'Not Great' },
+  3: { emoji: 'ð', label: 'Okay' },
+  4: { emoji: 'ð', label: 'Great' },
+  5: { emoji: 'ð¤©', label: 'Amazing!' },
+};
 
-async function trackEvent(restaurantId, eventType, feedbackId = null, metadata = {}) {
-  if (!restaurantId) return;
+async function trackEvent(eventType, restaurantId, feedbackId = null, metadata = null) {
   try {
-    await supabase.from("events").insert({
+    await supabase.from('events').insert({
       restaurant_id: restaurantId,
       event_type: eventType,
       feedback_id: feedbackId,
       metadata: metadata,
     });
-  } catch (err) {
-    console.error("Failed to track event:", err);
+  } catch (error) {
+    console.error('Event tracking failed:', error);
   }
 }
 
-export default function ReviewPage({ params }) {
-  const { slug } = params;
-  const [restaurant, setRestaurant] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [step, setStep] = useState("rate"); // rate | google | feedback | thanks | notfound
-  const [rating, setRating] = useState(0);
-  const [hoverRating, setHoverRating] = useState(0);
-  const [selectedCategories, setSelectedCategories] = useState([]);
-  const [comment, setComment] = useState("");
-  const [customerName, setCustomerName] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-  const [lastInsertedFeedbackId, setLastInsertedFeedbackId] = useState(null);
+function SkeletonLoader() {
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-brand-50 to-white">
+      {/* Header skeleton */}
+      <div className="h-48 bg-gradient-to-r from-brand-100 to-brand-50 animate-pulse" />
 
-  const feedbackCategories = [
-    { id: "food", label: "Food", icon: "🍽️" },
-    { id: "service", label: "Service", icon: "🤝" },
-    { id: "wait_time", label: "Wait Time", icon: "⏱️" },
-    { id: "cleanliness", label: "Cleanliness", icon: "✨" },
-    { id: "other", label: "Other", icon: "💭" },
-  ];
+      {/* Content skeleton */}
+      <div className="px-6 py-8 space-y-6">
+        <div className="h-8 bg-brand-100 rounded-lg animate-pulse w-64 mx-auto" />
+        <div className="flex justify-center gap-4">
+          {[...Array(5)].map((_, i) => (
+            <div
+              key={i}
+              className="w-12 h-12 bg-brand-100 rounded-full animate-pulse"
+            />
+          ))}
+        </div>
+        <div className="h-20 bg-brand-50 rounded-lg animate-pulse" />
+      </div>
+    </div>
+  );
+}
 
-  useEffect(() => {
-    async function loadRestaurant() {
-      try {
-        const { data, error } = await supabase
-          .from("restaurants")
-          .select("*")
-          .eq("slug", slug)
-          .single();
+function Step1Rating({ restaurant, onRatingSubmit, isLoading }) {
+  const [hoveredRating, setHoveredRating] = useState(null);
+  const [selectedRating, setSelectedRating] = useState(null);
 
-        if (error || !data) {
-          setStep("notfound");
-        } else {
-          setRestaurant(data);
-          // Track form_opened event when page loads with valid restaurant
-          await trackEvent(data.id, "form_opened", null, { slug });
+  const handleStarClick = async (rating) => {
+    setSelectedRating(rating);
+    await trackEvent('rating_submitted', restaurant.id, null, { rating });
+
+    // Brief animation delay before advancing
+    setTimeout(() => {
+      onRatingSubmit(rating);
+    }, 300);
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-brand-50 to-white flex flex-col">
+      {/* Gradient header with restaurant name */}
+      <div className="bg-gradient-to-r from-brand-600 to-brand-500 px-6 py-12 text-white">
+        <h1 className="text-4xl font-bold">{restaurant.name}</h1>
+        <p className="text-brand-100 text-sm mt-2">How was your visit?</p>
+      </div>
+
+      {/* Main content */}
+      <div className="flex-1 flex flex-col items-center justify-center px-6 py-12">
+        {/* Question */}
+        <h2 className="text-2xl font-semibold text-gray-900 text-center mb-12">
+          How was your experience at {restaurant.name}?
+        </h2>
+
+        {/* Star Rating */}
+        <div className="flex gap-4 mb-12 justify-center flex-wrap">
+          {[1, 2, 3, 4, 5].map((rating) => (
+            <button
+              key={rating}
+              onClick={() => handleStarClick(rating)}
+              onMouseEnter={() => setHoveredRating(rating)}
+              onMouseLeave={() => setHoveredRating(null)}
+              disabled={isLoading}
+              className={`relative w-14 h-14 flex items-center justify-center text-5xl transition-all duration-200 active:scale-95 disabled:opacity-50 touch-manipulation ${
+                selectedRating && selectedRating !== rating ? 'opacity-30' : ''
+              } ${
+                hoveredRating && hoveredRating >= rating
+                  ? 'scale-110'
+                  : selectedRating && selectedRating >= rating
+                  ? 'scale-100'
+                  : 'scale-95'
+              }`}
+            >
+              â­
+            </button>
+          ))}
+        </div>
+
+        {/* Emoji + Label feedback */}
+        {selectedRating && (
+          <div className="animate-fade-in text-center mb-8">
+            <div className="text-6xl mb-3">{RATING_FEEDBACK[selectedRating].emoji}</div>
+            <p className="text-xl font-semibold text-gray-900">
+              {RATING_FEEDBACK[selectedRating].label}
+            </p>
+          </div>
+        )}
+      </div>
+
+      <style jsx>{`
+        @keyframes fade-in {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
-      } catch (err) {
-        console.error("Failed to load restaurant:", err);
-        setStep("notfound");
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadRestaurant();
-  }, [slug]);
+        .animate-fade-in {
+          animation: fade-in 0.3s ease-out;
+        }
+      `}</style>
+    </div>
+  );
+}
 
-  const toggleCategory = (categoryId) => {
-    setSelectedCategories((prev) => {
-      if (prev.includes(categoryId)) {
-        return prev.filter((id) => id !== categoryId);
-      } else {
-        return [...prev, categoryId];
-      }
-    });
-  };
-
-  const handleRate = async () => {
-    if (rating === 0 || !restaurant) return;
-    const threshold = restaurant?.rating_threshold || 4;
-
-    // Track rating_submitted event
-    await trackEvent(restaurant.id, "rating_submitted", null, {
-      rating,
-      threshold,
-    });
-
-    if (rating >= threshold) {
-      // Save as redirected, then show Google page
-      const { data, error } = await supabase
-        .from("feedback")
-        .insert({
-          restaurant_id: restaurant.id,
-          rating,
-          was_redirected: true,
-          customer_name: "Happy Customer",
-          categories: [],
-        })
-        .select()
-        .single();
-
-      if (!error && data) {
-        setLastInsertedFeedbackId(data.id);
-      }
-
-      setStep("google");
-    } else {
-      setStep("feedback");
-    }
-  };
-
+function Step2aGoogleRedirect({ restaurant, onCompleted, isLoading }) {
   const handleGoogleClick = async () => {
-    if (restaurant) {
-      await trackEvent(restaurant.id, "google_clicked", lastInsertedFeedbackId);
-    }
+    await trackEvent('google_clicked', restaurant.id, null, {
+      google_review_url: restaurant.google_review_url,
+    });
+    window.open(restaurant.google_review_url, '_blank');
+    setTimeout(() => onCompleted(), 500);
   };
 
-  const handleSubmitFeedback = async () => {
-    if (!comment.trim() || !restaurant) return;
-    setSubmitting(true);
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-white flex flex-col relative overflow-hidden">
+      {/* Celebration confetti animation */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {[...Array(12)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute animate-confetti text-2xl"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: '-10px',
+              '--duration': `${2 + Math.random() * 1}s`,
+              '--delay': `${Math.random() * 0.5}s`,
+              animationDuration: `${2 + Math.random() * 1}s`,
+              animationDelay: `${Math.random() * 0.5}s`,
+            }}
+          >
+            ð
+          </div>
+        ))}
+      </div>
+
+      {/* Header */}
+      <div className="bg-gradient-to-r from-emerald-600 to-emerald-500 px-6 py-12 text-white relative z-10">
+        <h1 className="text-3xl font-bold">Thank You!</h1>
+        <p className="text-emerald-100 text-sm mt-2">We're so glad you loved it</p>
+      </div>
+
+      {/* Main content */}
+      <div className="flex-1 flex flex-col items-center justify-center px-6 py-12 text-center relative z-10">
+        <h2 className="text-2xl font-semibold text-gray-900 mb-6">
+          Wow, thank you! We're so glad you had a great experience!
+        </h2>
+
+        <p className="text-gray-600 mb-10 leading-relaxed max-w-sm">
+          Would you mind sharing your feedback on Google? It really helps us reach new customers.
+        </p>
+
+        {/* Google Reviews Button */}
+        <button
+          onClick={handleGoogleClick}
+          disabled={isLoading}
+          className="w-full max-w-xs py-4 px-6 mb-6 bg-white border-2 border-blue-500 text-blue-600 font-semibold rounded-lg hover:bg-blue-50 active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+        >
+          <span className="text-xl">ð</span>
+          Share on Google Reviews
+        </button>
+
+        {/* Maybe later link */}
+        <button
+          onClick={onCompleted}
+          disabled={isLoading}
+          className="text-gray-500 text-sm hover:text-gray-700 transition-colors"
+        >
+          Maybe later
+        </button>
+      </div>
+
+      <style jsx>{`
+        @keyframes confetti {
+          to {
+            transform: translateY(100vh) rotateZ(360deg);
+            opacity: 0;
+          }
+        }
+        .animate-confetti {
+          animation: confetti var(--duration, 3s) ease-in var(--delay, 0s) forwards;
+        }
+      `}</style>
+    </div>
+  );
+}
+
+function Step2bPrivateFeedback({ restaurant, rating, onSubmitted, isLoading }) {
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [comment, setComment] = useState('');
+  const [customerName, setCustomerName] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const categories = Object.keys(CATEGORY_EMOJIS);
+
+  const toggleCategory = (category) => {
+    setSelectedCategories((prev) =>
+      prev.includes(category) ? prev.filter((c) => c !== category) : [...prev, category]
+    );
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
 
     try {
+      // Save feedback
       const { data, error } = await supabase
-        .from("feedback")
+        .from('feedback')
         .insert({
           restaurant_id: restaurant.id,
           rating,
-          comment: comment.trim(),
-          customer_name: customerName.trim() || "Anonymous",
+          comment,
+          customer_name: customerName || null,
           was_redirected: false,
           categories: selectedCategories,
         })
         .select()
         .single();
 
-      if (!error && data) {
-        // Track feedback_submitted event
-        await trackEvent(restaurant.id, "feedback_submitted", data.id, {
-          categories: selectedCategories,
-          hasComment: true,
-        });
+      if (error) throw error;
 
-        // Trigger low-rating alert (fire and forget — don't block the user)
-        if (rating <= 2) {
-          fetch("/api/alert", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
+      // Track feedback submission
+      await trackEvent('feedback_submitted', restaurant.id, data.id, {
+        categories: selectedCategories,
+        comment_length: comment.length,
+      });
+
+      // For low ratings (1-2 stars), trigger alert
+      if (rating <= 2) {
+        try {
+          await fetch('/api/alert', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               restaurant_id: restaurant.id,
               rating,
-              comment: comment.trim(),
-              customer_name: customerName.trim() || "Anonymous",
+              comment,
+              customer_name: customerName || 'Anonymous',
             }),
-          }).catch(() => {}); // Silently fail — alert is best-effort
+          });
+        } catch (alertError) {
+          console.error('Alert notification failed:', alertError);
         }
       }
 
-      setStep("thanks");
-    } catch (err) {
-      console.error("Failed to submit feedback:", err);
+      onSubmitted(data);
+    } catch (error) {
+      console.error('Feedback submission failed:', error);
+      alert('Failed to submit feedback. Please try again.');
     } finally {
-      setSubmitting(false);
+      setIsSubmitting(false);
     }
   };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-brand-50 to-white flex flex-col">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-brand-600 to-brand-500 px-6 py-12 text-white">
+        <h1 className="text-3xl font-bold">Help Us Improve</h1>
+        <p className="text-brand-100 text-sm mt-2">Your feedback matters</p>
+      </div>
+
+      {/* Main content */}
+      <div className="flex-1 px-6 py-8 overflow-y-auto pb-6">
+        <p className="text-gray-700 text-center mb-8 leading-relaxed">
+          We're sorry your experience wasn't perfect. Your feedback helps us improve.
+        </p>
+
+        <form onSubmit={handleSubmit} className="space-y-8 max-w-2xl mx-auto">
+          {/* Categories */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-900 mb-4">
+              What could we improve? (select all that apply)
+            </label>
+            <div className="flex flex-wrap gap-3">
+              {categories.map((category) => (
+                <button
+                  key={category}
+                  type="button"
+                  onClick={() => toggleCategory(category)}
+                  className={`px-4 py-2 rounded-full font-medium text-sm transition-all duration-200 active:scale-95 touch-manipulation ${
+                    selectedCategories.includes(category)
+                      ? 'bg-brand-600 text-white shadow-lg scale-105'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  <span className="mr-1">{CATEGORY_EMOJIS[category]}</span>
+                  {category}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Comment textarea */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-900 mb-2">
+              Tell us more (optional)
+            </label>
+            <textarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value.slice(0, 500))}
+              placeholder="What happened? How can we do better?"
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-brand-500 focus:outline-none resize-none font-sans text-base transition-colors"
+              rows={4}
+            />
+            <p className="text-xs text-gray-500 mt-2 text-right">
+              {comment.length}/500
+            </p>
+          </div>
+
+          {/* Name field */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-900 mb-2">
+              Your name (optional)
+            </label>
+            <input
+              type="text"
+              value={customerName}
+              onChange={(e) => setCustomerName(e.target.value)}
+              placeholder="John Doe"
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-brand-500 focus:outline-none font-sans text-base transition-colors"
+            />
+          </div>
+
+          {/* Submit button */}
+          <button
+            type="submit"
+            disabled={isSubmitting || isLoading}
+            className="w-full py-4 px-6 bg-gradient-to-r from-brand-600 to-brand-500 text-white font-semibold rounded-lg hover:shadow-lg active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2 touch-manipulation"
+          >
+            {isSubmitting ? (
+              <>
+                <span className="animate-spin inline-block">â³</span>
+                Submitting...
+              </>
+            ) : (
+              <>
+                <span>â</span>
+                Submit Feedback
+              </>
+            )}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+function Step3ThankYou({ restaurant, customerName }) {
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-white flex flex-col">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-emerald-600 to-emerald-500 px-6 py-12 text-white">
+        <h1 className="text-3xl font-bold">Thank You!</h1>
+      </div>
+
+      {/* Main content */}
+      <div className="flex-1 flex flex-col items-center justify-center px-6 py-12 text-center">
+        {/* Animated checkmark */}
+        <div className="mb-8 animate-bounce-slow">
+          <div className="text-7xl">â</div>
+        </div>
+
+        <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+          Thanks for your feedback, {customerName || 'friend'}!
+        </h2>
+
+        <p className="text-gray-600 mb-12 max-w-sm leading-relaxed">
+          Your feedback helps {restaurant.name} improve and serve you better next time.
+        </p>
+
+        {/* Powered by PlateRate */}
+        <a
+          href="https://platerate.app"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-xs text-gray-400 hover:text-gray-600 transition-colors"
+        >
+          Powered by PlateRate
+        </a>
+      </div>
+
+      <style jsx>{`
+        @keyframes bounce-slow {
+          0%, 100% {
+            transform: scale(1);
+          }
+          50% {
+            transform: scale(1.1);
+          }
+        }
+        .animate-bounce-slow {
+          animation: bounce-slow 2s ease-in-out infinite;
+        }
+      `}</style>
+    </div>
+  );
+}
+
+export default function ReviewPage({ params }) {
+  const { slug } = params;
+  const [restaurant, setRestaurant] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [step, setStep] = useState(1);
+  const [rating, setRating] = useState(null);
+  const [feedback, setFeedback] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    const fetchRestaurant = async () => {
+      try {
+        const { data, error: err } = await supabase
+          .from('restaurants')
+          .select('*')
+          .eq('slug', slug)
+          .single();
+
+        if (err) throw err;
+        setRestaurant(data);
+
+        // Track page load
+        await trackEvent('form_opened', data.id);
+      } catch (err) {
+        console.error('Failed to load restaurant:', err);
+        setError('Restaurant not found');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRestaurant();
+  }, [slug]);
 
   if (loading) {
     return <SkeletonLoader />;
   }
 
-  if (step === "notfound") {
+  if (error || !restaurant) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-brand-900 via-brand-800 to-brand-900 flex items-center justify-center p-5">
-        <div className="bg-white rounded-3xl p-12 max-w-md w-full text-center shadow-2xl animate-fadeIn">
-          <div className="text-5xl mb-4">🍽️</div>
-          <h1 className="text-2xl font-bold text-brand-900 mb-3">
-            Restaurant not found
-          </h1>
-          <p className="text-gray-500">
-            This review link doesn&apos;t seem to be active. Please check with
-            the restaurant for the correct link.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  // Step: Rate
-  if (step === "rate") {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-brand-900 via-brand-800 to-brand-900 flex items-center justify-center p-5">
-        <div className="bg-white rounded-3xl p-10 sm:p-12 max-w-md w-full text-center shadow-2xl animate-fadeIn">
-          <div className="w-[72px] h-[72px] bg-gradient-to-br from-brand-500 to-brand-300 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl">
-            🍽️
-          </div>
-          <h1 className="text-2xl font-bold text-brand-900 mb-1">
-            Thanks for visiting
-          </h1>
-          <h2 className="text-xl font-semibold text-brand-600 mb-2">
-            {restaurant.name}
-          </h2>
-          <p className="text-gray-500 mb-10">
-            How was your experience today?
-          </p>
-
-          <div className="flex justify-center gap-2 mb-6">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <Star
-                key={i}
-                filled={(hoverRating || rating) >= i}
-                onHover={() => setHoverRating(i)}
-                onClick={() => setRating(i)}
-                size={48}
-              />
-            ))}
-          </div>
-          <div
-            className="mb-10 h-6"
-            onMouseLeave={() => setHoverRating(0)}
-          >
-            <p className="text-gray-400 text-sm font-medium">
-              {rating === 0
-                ? "Tap a star to rate"
-                : rating <= 2
-                ? "We're sorry to hear that"
-                : rating === 3
-                ? "Thanks for the feedback"
-                : rating === 4
-                ? "Glad you enjoyed it!"
-                : "Amazing! We love to hear it!"}
-            </p>
-          </div>
-
-          <button
-            onClick={handleRate}
-            disabled={rating === 0}
-            className={`w-full py-4 rounded-xl text-base font-semibold transition-all ${
-              rating > 0
-                ? "bg-gradient-to-r from-brand-500 to-brand-600 text-white cursor-pointer hover:shadow-lg active:scale-95"
-                : "bg-gray-200 text-gray-400 cursor-default"
-            }`}
-          >
-            Continue
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // Step: Google redirect
-  if (step === "google") {
-    const googleUrl = restaurant.google_review_url || "#";
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-brand-900 via-brand-800 to-brand-900 flex items-center justify-center p-5">
-        <div className="bg-white rounded-3xl p-10 sm:p-12 max-w-md w-full text-center shadow-2xl animate-fadeIn">
-          <div className="w-[72px] h-[72px] bg-gradient-to-br from-emerald-500 to-emerald-300 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl">
-            🎉
-          </div>
-          <h1 className="text-2xl font-bold text-brand-900 mb-3">
-            We&apos;re so glad!
-          </h1>
-          <p className="text-gray-500 mb-10 leading-relaxed">
-            Would you mind sharing your experience? A quick review helps other
-            food lovers discover {restaurant.name}.
-          </p>
-
-          <a
-            href={googleUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={handleGoogleClick}
-            className="flex items-center justify-center gap-3 w-full py-4 rounded-xl bg-brand-900 text-white font-semibold text-base hover:bg-brand-800 transition-colors active:scale-95 mb-3"
-          >
-            <svg
-              width={20}
-              height={20}
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-            </svg>
-            Leave a Google Review
-          </a>
-
-          <p className="text-gray-400 text-xs mt-6">
-            Thank you for supporting local restaurants! ❤️
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  // Step: Private feedback form
-  if (step === "feedback") {
-    const showCategories = rating >= 1 && rating <= 3;
-
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-brand-900 via-brand-800 to-brand-900 flex items-center justify-center p-5">
-        <div className="bg-white rounded-3xl p-10 sm:p-12 max-w-md w-full shadow-2xl animate-fadeIn">
-          <div className="w-[72px] h-[72px] bg-gradient-to-br from-indigo-500 to-indigo-300 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl">
-            💬
-          </div>
-          <h1 className="text-2xl font-bold text-brand-900 mb-1">
-            We&apos;d love to hear more
-          </h1>
-          <p className="text-gray-500 mb-6 leading-relaxed text-sm">
-            Your feedback goes directly to the {restaurant.name} team. We
-            take every comment seriously.
-          </p>
-
-          {showCategories && (
-            <div className="mb-6 pb-6 border-b border-gray-200">
-              <p className="text-sm font-semibold text-gray-700 mb-3">
-                What could we improve?
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {feedbackCategories.map((category) => (
-                  <button
-                    key={category.id}
-                    onClick={() => toggleCategory(category.id)}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all active:scale-95 ${
-                      selectedCategories.includes(category.id)
-                        ? "bg-gradient-to-r from-brand-500 to-brand-600 text-white shadow-md"
-                        : "bg-gray-100 text-gray-700 border-2 border-gray-200 hover:border-brand-300"
-                    }`}
-                  >
-                    <span className="mr-1">{category.icon}</span>
-                    {category.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          <input
-            type="text"
-            value={customerName}
-            onChange={(e) => setCustomerName(e.target.value)}
-            placeholder="Your name (optional)"
-            className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 text-sm mb-3 outline-none focus:border-brand-400 transition-colors"
-          />
-          <textarea
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            placeholder="Tell us what happened..."
-            rows={5}
-            className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 text-sm mb-5 outline-none focus:border-brand-400 transition-colors resize-none"
-          />
-
-          <button
-            onClick={handleSubmitFeedback}
-            disabled={!comment.trim() || submitting}
-            className={`w-full py-4 rounded-xl text-base font-semibold transition-all ${
-              comment.trim() && !submitting
-                ? "bg-gradient-to-r from-brand-500 to-brand-600 text-white cursor-pointer hover:shadow-lg active:scale-95"
-                : "bg-gray-200 text-gray-400 cursor-default"
-            }`}
-          >
-            {submitting ? "Sending..." : "Send Feedback"}
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // Step: Thank you
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-brand-900 via-brand-800 to-brand-900 flex items-center justify-center p-5">
-      <div className="bg-white rounded-3xl p-10 sm:p-12 max-w-md w-full text-center shadow-2xl animate-fadeIn">
-        <div className="w-[72px] h-[72px] bg-gradient-to-br from-emerald-500 to-emerald-300 rounded-full flex items-center justify-center mx-auto mb-6">
-          <svg
-            width={36}
-            height={36}
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="white"
-            strokeWidth="3"
-          >
-            <path d="M20 6L9 17l-5-5" />
-          </svg>
-        </div>
-        <h1 className="text-2xl font-bold text-brand-900 mb-3">Thank you!</h1>
-        <p className="text-gray-500 leading-relaxed">
-          Your feedback has been sent to the {restaurant.name} team. We
-          appreciate you helping us improve.
+      <div className="min-h-screen bg-gradient-to-b from-brand-50 to-white flex flex-col items-center justify-center px-6">
+        <div className="text-6xl mb-4">â</div>
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">Oops!</h1>
+        <p className="text-gray-600 text-center">
+          {error || 'We could not find this restaurant.'}
         </p>
       </div>
+    );
+  }
+
+  return (
+    <div className="bg-white">
+      {step === 1 && (
+        <Step1Rating
+          restaurant={restaurant}
+          onRatingSubmit={(selectedRating) => {
+            setRating(selectedRating);
+            setStep(selectedRating >= restaurant.rating_threshold ? 2 : 3);
+          }}
+          isLoading={isSubmitting}
+        />
+      )}
+
+      {step === 2 && rating >= restaurant.rating_threshold && (
+        <Step2aGoogleRedirect
+          restaurant={restaurant}
+          onCompleted={() => setStep(4)}
+          isLoading={isSubmitting}
+        />
+      )}
+
+      {step === 3 && rating < restaurant.rating_threshold && (
+        <Step2bPrivateFeedback
+          restaurant={restaurant}
+          rating={rating}
+          onSubmitted={(submittedFeedback) => {
+            setFeedback(submittedFeedback);
+            setStep(5);
+          }}
+          isLoading={isSubmitting}
+        />
+      )}
+
+      {step === 4 && (
+        <Step3ThankYou
+          restaurant={restaurant}
+          customerName={null}
+        />
+      )}
+
+      {step === 5 && (
+        <Step3ThankYou
+          restaurant={restaurant}
+          customerName={feedback?.customer_name}
+        />
+      )}
     </div>
   );
 }

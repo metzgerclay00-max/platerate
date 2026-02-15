@@ -1,9 +1,9 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "PlateRate — Turn Happy Diners Into 5-Star Reviews",
+  title: "PlateRate â Turn Happy Diners Into 5-Star Reviews",
   description:
-    "PlateRate automatically routes happy customers to Google Reviews and sends unhappy feedback straight to you — privately.",
+    "PlateRate automatically routes happy customers to Google Reviews and sends unhappy feedback straight to you â privately.",
 };
 
 export default function RootLayout({ children }) {

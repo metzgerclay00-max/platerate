@@ -1,4 +1,4 @@
-# PlateRate — Deployment Guide
+# PlateRate â Deployment Guide
 
 Follow these steps in order. The whole process takes about 20 minutes.
 
@@ -25,20 +25,20 @@ Follow these steps in order. The whole process takes about 20 minutes.
 3. Open the file `supabase-schema.sql` from this project in any text editor
 4. Copy the ENTIRE contents and paste it into the SQL Editor
 5. Click **Run** (the green play button)
-6. You should see "Success. No rows returned" — that means it worked!
+6. You should see "Success. No rows returned" â that means it worked!
 
 ### Turn off email confirmation (important for testing):
 
-1. In Supabase, go to **Authentication** → **Providers** → **Email**
+1. In Supabase, go to **Authentication** â **Providers** â **Email**
 2. Toggle OFF "Confirm email"
 3. Click **Save**
 
 ### Get your API keys:
 
-1. In Supabase, go to **Settings** (gear icon) → **API**
+1. In Supabase, go to **Settings** (gear icon) â **API**
 2. Copy the **Project URL** (looks like `https://abc123.supabase.co`)
 3. Copy the **anon/public** key (the long string under "Project API keys")
-4. Save both of these — you'll need them in Step 4
+4. Save both of these â you'll need them in Step 4
 
 ## Step 3: Upload the code to GitHub
 
@@ -46,14 +46,14 @@ Follow these steps in order. The whole process takes about 20 minutes.
 2. Name the repository `platerate`
 3. Keep it **Public** (required for free Vercel hosting)
 4. Click **Create repository**
-5. You'll see instructions — you can either:
+5. You'll see instructions â you can either:
    - **Easy way:** Drag and drop all the project files into the GitHub page
    - **Terminal way:** Follow the git commands shown on the page
 
 ## Step 4: Deploy to Vercel (your free hosting)
 
-1. Go to https://vercel.com and click "Sign Up" → sign in with GitHub
-2. Click **"Add New..."** → **"Project"**
+1. Go to https://vercel.com and click "Sign Up" â sign in with GitHub
+2. Click **"Add New..."** â **"Project"**
 3. Find your `platerate` repo and click **Import**
 4. Before deploying, click **"Environment Variables"** and add these two:
 
@@ -63,14 +63,14 @@ Follow these steps in order. The whole process takes about 20 minutes.
    | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Your Supabase anon key from Step 2 |
 
 5. Click **Deploy**
-6. Wait 1-2 minutes — Vercel will build and deploy your app
-7. You'll get a URL like `platerate-abc123.vercel.app` — that's your live site!
+6. Wait 1-2 minutes â Vercel will build and deploy your app
+7. You'll get a URL like `platerate-abc123.vercel.app` â that's your live site!
 
 ## Step 5: Set up your custom domain (optional but recommended)
 
-1. Buy a domain (namecheap.com or porkbun.com are cheap — ~$10/year)
+1. Buy a domain (namecheap.com or porkbun.com are cheap â ~$10/year)
 2. Something like `platerate.co` or `getplaterate.com`
-3. In Vercel, go to your project → **Settings** → **Domains**
+3. In Vercel, go to your project â **Settings** â **Domains**
 4. Add your domain and follow the DNS instructions
 
 ## Step 6: Test it!
@@ -79,8 +79,8 @@ Follow these steps in order. The whole process takes about 20 minutes.
 2. Create an account with your email
 3. Set up your restaurant name and Google Reviews URL
 4. You'll see your dashboard with your unique review link
-5. Open that review link in your phone browser — that's what customers see!
-6. Try rating — 4-5 stars should show the Google redirect, 1-3 should show the feedback form
+5. Open that review link in your phone browser â that's what customers see!
+6. Try rating â 4-5 stars should show the Google redirect, 1-3 should show the feedback form
 
 ---
 
@@ -102,13 +102,13 @@ Follow these steps in order. The whole process takes about 20 minutes.
 ## Troubleshooting
 
 **"Restaurant not found" on the review page:**
-Make sure you completed the signup flow and created your restaurant. Check Supabase → Table Editor → restaurants to see if your data is there.
+Make sure you completed the signup flow and created your restaurant. Check Supabase â Table Editor â restaurants to see if your data is there.
 
 **Can't sign up / login not working:**
 Make sure you turned off email confirmation in Supabase (Step 2).
 
 **Page looks broken:**
-Make sure both environment variables are set correctly in Vercel. Go to Vercel → Settings → Environment Variables and double-check.
+Make sure both environment variables are set correctly in Vercel. Go to Vercel â Settings â Environment Variables and double-check.
 
 **Need help?**
 Ask Claude to help you debug! Paste the error message and I can walk you through fixing it.
