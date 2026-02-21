@@ -112,21 +112,28 @@ function IconChevron({ open }) {
 }
 
 // --- Star Rating Component ---
-function StarRating({ selected, onSelect, size = 'text-3xl' }) {
+function StarIcon({ filled }) {
+  return (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill={filled ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.5">
+      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+    </svg>
+  );
+}
+
+function StarRating({ selected, onSelect }) {
   return (
     <div className="flex justify-center gap-2">
       {[1, 2, 3, 4, 5].map((star) => (
         <button
           key={star}
           onClick={() => onSelect(star)}
-          className={`${size} transition-all duration-150 ${
+          className={`transition-all duration-150 ${
             star <= selected
               ? 'text-amber-400 scale-110'
               : 'text-gray-300 hover:text-amber-300 hover:scale-105'
           }`}
-          style={{ WebkitTextStroke: star <= selected ? 'none' : '0.5px #d1d5db' }}
         >
-          â
+          <StarIcon filled={star <= selected} />
         </button>
       ))}
     </div>
@@ -178,7 +185,7 @@ export default function Home() {
       color: "bg-brand-500",
     },
     {
-      quote: "The private feedback alone is worth the price. We found out our oat milk latte was consistently under-extracted â fixed it, and complaints dropped overnight.",
+      quote: "The private feedback alone is worth the price. We found out our oat milk latte was consistently under-extracted -fixed it, and complaints dropped overnight.",
       author: "Sarah C.",
       shop: "Brewed Awakening, San Francisco",
       rating: 5,
@@ -188,7 +195,7 @@ export default function Home() {
     {
       quote: "Between pulling shots and managing staff, I have zero time for marketing. Stuck the QR code by the register and had 23 new reviews in the first week.",
       author: "Antonio R.",
-      shop: "CafÃ© Cubano, Miami",
+      shop: "Café Cubano, Miami",
       rating: 4,
       initials: "AR",
       color: "bg-brand-700",
@@ -241,7 +248,7 @@ export default function Home() {
                 Turn happy customers into 5-star Google reviews
               </h1>
               <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-                GetFives routes satisfied customers straight to Google Reviews and sends critical feedback directly to you â before it goes public. Built specifically for coffee shops.
+                GetFives routes satisfied customers straight to Google Reviews and sends critical feedback directly to you -before it goes public. Built specifically for coffee shops.
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
                 <a href="/login" className="bg-brand-500 hover:bg-brand-600 text-white px-6 py-3 rounded-md font-medium transition text-center">
@@ -259,7 +266,7 @@ export default function Home() {
               <div className="bg-white rounded-xl border border-gray-200 shadow-lg p-8 max-w-sm mx-auto">
                 <p className="text-sm text-gray-500 font-medium text-center mb-1">Your Coffee Shop</p>
                 <p className="text-center text-gray-900 font-semibold mb-6">How was your visit today?</p>
-                <StarRating selected={selectedStars} onSelect={setSelectedStars} size="text-4xl" />
+                <StarRating selected={selectedStars} onSelect={setSelectedStars} />
 
                 {selectedStars >= 4 && (
                   <div className="mt-6 bg-green-50 border border-green-100 rounded-lg p-4 text-center">
@@ -343,7 +350,7 @@ export default function Home() {
               {
                 step: '03',
                 title: 'Critical feedback stays private',
-                description: '1-3 star ratings go to your private dashboard. You see the issue, fix it, and respond â before it hits the internet.',
+                description: '1-3 star ratings go to your private dashboard. You see the issue, fix it, and respond -before it hits the internet.',
                 icon: <IconShield />,
               },
             ].map((item, i) => (
@@ -385,7 +392,7 @@ export default function Home() {
               {
                 icon: <IconChart />,
                 title: 'Real-time Dashboard',
-                description: 'Live analytics, feedback tracking, and actionable insights â all in one place.',
+                description: 'Live analytics, feedback tracking, and actionable insights -all in one place.',
               },
               {
                 icon: <IconBell />,
@@ -530,10 +537,12 @@ export default function Home() {
               <div key={i} className="bg-white rounded-lg border border-gray-200 p-6">
                 <div className="flex gap-0.5 mb-4">
                   {[...Array(5)].map((_, j) => (
-                    <span key={j} className={`text-lg ${j < t.rating ? 'text-amber-400' : 'text-gray-200'}`}>â</span>
+                    <svg key={j} width="16" height="16" viewBox="0 0 24 24" fill={j < t.rating ? "#f59e0b" : "#e5e7eb"} stroke="none">
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                    </svg>
                   ))}
                 </div>
-                <p className="text-gray-700 mb-6 leading-relaxed">&ldquo;{t.quote}&rdquo;</p>
+                <p className="text-gray-700 mb-6 leading-relaxed">"{t.quote}"</p>
                 <div className="flex items-center gap-3">
                   <div className={`w-9 h-9 ${t.color} rounded-full flex items-center justify-center text-white text-xs font-semibold`}>
                     {t.initials}
@@ -627,7 +636,7 @@ export default function Home() {
           </div>
 
           <div className="border-t border-gray-800 pt-6 text-sm">
-            <p>Â© 2026 GetFives. All rights reserved.</p>
+            <p>© 2026 GetFives. All rights reserved.</p>
           </div>
         </div>
       </footer>

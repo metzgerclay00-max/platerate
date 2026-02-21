@@ -39,7 +39,7 @@ function StatCard({ label, value, change, icon, trend }) {
       <p className="text-3xl font-bold text-gray-900 mb-2">{value}</p>
       {change !== undefined && (
         <div className={`flex items-center gap-1 text-sm font-medium ${trendColor}`}>
-          <span>{isPositive ? "â" : "â"}</span>
+          <span>{isPositive ? "↑" : "↓"}</span>
           <span>{Math.abs(change)}% vs last week</span>
         </div>
       )}
@@ -111,10 +111,10 @@ function QRCodeCard({ restaurant }) {
           <div className="bg-blue-50 border border-blue-100 rounded-lg p-4">
             <p className="text-sm font-medium text-blue-900 mb-2">Quick Share Tips</p>
             <ul className="text-xs text-blue-800 space-y-1">
-              <li>â¢ Print on receipts and menus</li>
-              <li>â¢ Display on table tents</li>
-              <li>â¢ Share on social media</li>
-              <li>â¢ Add to email signatures</li>
+              <li>• Print on receipts and menus</li>
+              <li>• Display on table tents</li>
+              <li>• Share on social media</li>
+              <li>• Add to email signatures</li>
             </ul>
           </div>
         </div>
@@ -304,11 +304,11 @@ function CategoryBreakdown({ feedback }) {
   if (total === 0) return null;
 
   const categories = [
-    { key: "Food", icon: "ð½ï¸" },
-    { key: "Service", icon: "ð¤" },
-    { key: "Wait Time", icon: "â±ï¸" },
-    { key: "Cleanliness", icon: "â¨" },
-    { key: "Other", icon: "ð­" },
+    { key: "Food", icon: "🍽️" },
+    { key: "Service", icon: "🤝" },
+    { key: "Wait Time", icon: "⏱️" },
+    { key: "Cleanliness", icon: "✨" },
+    { key: "Other", icon: "💭" },
   ];
 
   const colors = {
@@ -396,7 +396,7 @@ function RatingDistribution({ feedback }) {
               <span className="w-6 text-right text-sm font-medium text-gray-600">
                 {rating}
               </span>
-              <span className="text-lg">{"â­".repeat(rating)}</span>
+              <span className="text-lg">{"⭐".repeat(rating)}</span>
               <div className="flex-1 bg-gray-100 rounded-full h-2 overflow-hidden">
                 <div
                   className={`${colors[rating]} h-full rounded-full transition-all`}
@@ -442,7 +442,7 @@ function RecentActivityFeed({ feedback }) {
   if (feedback.length === 0) {
     return (
       <div className="bg-white rounded-2xl p-12 shadow-sm border border-gray-100 text-center">
-        <div className="text-6xl mb-4">ð</div>
+        <div className="text-6xl mb-4">📝</div>
         <h3 className="text-lg font-semibold text-gray-900 mb-2">
           No feedback yet
         </h3>
@@ -503,7 +503,7 @@ function RecentActivityFeed({ feedback }) {
                 </div>
                 <div className="flex items-center gap-2 mb-2">
                   <span className={`text-sm ${getStarColor(item.rating)}`}>
-                    {"â­".repeat(item.rating)}
+                    {"⭐".repeat(item.rating)}
                   </span>
                   {item.was_redirected && (
                     <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
@@ -881,10 +881,10 @@ export default function Dashboard() {
             </span>
 
             <a href="/sms" className="px-3 py-1.5 text-sm font-medium text-brand-600 hover:bg-brand-50 rounded-lg transition-colors">
-              ð± SMS
+              📱 SMS
             </a>
             <a href="/notifications" className="relative p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
-              <span className="text-xl">ð</span>
+              <span className="text-xl">🔔</span>
               <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
             </a>
             <a href="/billing" className="px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
@@ -941,29 +941,29 @@ export default function Dashboard() {
                 value={feedback.length}
                 change={reviewChange}
                 trend={reviewChange >= 0 ? "up" : "down"}
-                icon="ð"
+                icon="📝"
               />
               <StatCard
                 label="Average Rating"
                 value={avgRating.toFixed(1)}
-                icon="â­"
+                icon="⭐"
               />
               <StatCard
                 label="Google Redirects"
                 value={`${googleRedirects}`}
                 change={redirectPercent}
                 trend="up"
-                icon="ð"
+                icon="🔗"
               />
               <StatCard
                 label="Response Rate"
                 value={`${responseRate}%`}
-                icon="ð"
+                icon="📊"
               />
               <StatCard
                 label="This Week"
                 value={thisWeekFeedback.length}
-                icon="ð"
+                icon="📈"
               />
             </div>
 

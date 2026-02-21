@@ -101,9 +101,9 @@ function Header({ restaurant, onSignOut }) {
 // Tab Navigation Component
 function TabNavigation({ activeTab, setActiveTab }) {
   const tabs = [
-    { id: "send", label: "Send SMS", icon: "ð±" },
-    { id: "history", label: "History", icon: "ð" },
-    { id: "settings", label: "Settings", icon: "âï¸" },
+    { id: "send", label: "Send SMS", icon: "📱" },
+    { id: "history", label: "History", icon: "📋" },
+    { id: "settings", label: "Settings", icon: "⚙️" },
   ];
 
   return (
@@ -375,7 +375,7 @@ function SendSMSTab({ restaurant, smsTemplate, smsLimit, smsSent }) {
                 htmlFor="csv-upload"
                 className="cursor-pointer"
               >
-                <div className="text-4xl mb-3">ð</div>
+                <div className="text-4xl mb-3">📁</div>
                 <p className="font-medium text-gray-900">Click to upload or drag and drop</p>
                 <p className="text-sm text-gray-600 mt-1">CSV, TSV, or TXT files</p>
                 <p className="text-xs text-gray-500 mt-2">
@@ -386,7 +386,7 @@ function SendSMSTab({ restaurant, smsTemplate, smsLimit, smsSent }) {
 
             {bulkFile && (
               <p className="mt-4 text-sm text-green-600 font-medium">
-                â File loaded: {bulkFile} ({csvData.length} rows)
+                ✓ File loaded: {bulkFile} ({csvData.length} rows)
               </p>
             )}
           </div>
@@ -592,7 +592,7 @@ function HistoryTab() {
           </div>
         ) : filteredMessages.length === 0 ? (
           <div className="p-12 text-center">
-            <p className="text-4xl mb-3">ð­</p>
+            <p className="text-4xl mb-3">📭</p>
             <p className="text-gray-600">No SMS messages yet</p>
           </div>
         ) : (
@@ -742,7 +742,7 @@ function SettingsTab({ restaurant, smsTemplate, setSmsTemplate, smsSent, smsLimi
       {/* Twilio Configuration */}
       <div className="bg-blue-50 border border-blue-200 rounded-2xl p-8">
         <div className="flex items-start gap-3">
-          <span className="text-xl">â¹ï¸</span>
+          <span className="text-xl">ℹ️</span>
           <div>
             <h3 className="font-semibold text-blue-900 mb-1">Twilio Configuration</h3>
             <p className="text-sm text-blue-800">
@@ -774,7 +774,7 @@ function SettingsTab({ restaurant, smsTemplate, setSmsTemplate, smsSent, smsLimi
 
         {progressPercent >= 90 && (
           <p className="text-sm text-orange-600 font-medium">
-            â ï¸ You're approaching your monthly limit. Consider upgrading your plan.
+            ⚠️ You're approaching your monthly limit. Consider upgrading your plan.
           </p>
         )}
       </div>

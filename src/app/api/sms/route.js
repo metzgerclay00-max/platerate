@@ -91,7 +91,7 @@ async function sendSMSViatwilio(toPhone, messageBody) {
 }
 
 /**
- * POST /api/sms â Send one or more SMS messages
+ * POST /api/sms - Send one or more SMS messages
  */
 export async function POST(request) {
   const errors = [];
@@ -293,7 +293,7 @@ export async function POST(request) {
 }
 
 /**
- * GET /api/sms?restaurant_id=uuid â Get SMS history for a restaurant
+ * GET /api/sms?restaurant_id=uuid - Get SMS history for a restaurant
  */
 export async function GET(request) {
   try {
