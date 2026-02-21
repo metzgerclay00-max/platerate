@@ -55,7 +55,7 @@ function Header({ restaurant, onSignOut }) {
             </div>
             <div>
               <h1 className="text-xl font-bold">GetFives</h1>
-              <p className="text-sm text-brand-100">{restaurant?.name || "Restaurant"}</p>
+              <p className="text-sm text-brand-100">{restaurant?.name || "Coffee Shop"}</p>
             </div>
           </div>
 
@@ -159,7 +159,7 @@ function SendSMSTab({ restaurant, smsTemplate, smsLimit, smsSent }) {
   const fillTemplate = (phone, name = "") => {
     let message = smsTemplate || "Hello {name}, visit {business} today!";
     message = message.replace("{name}", name || "Valued Customer");
-    message = message.replace("{business}", restaurant?.name || "our restaurant");
+    message = message.replace("{business}", restaurant?.name || "our coffee shop");
     message = message.replace("{link}", `https://getfives.ai/r/${restaurant?.slug || ""}`);
     return message;
   };
@@ -686,7 +686,7 @@ function SettingsTab({ restaurant, smsTemplate, setSmsTemplate, smsSent, smsLimi
           <textarea
             value={template}
             onChange={(e) => setTemplate(e.target.value)}
-            placeholder="Hello {name}, visit {business} today!"
+            placeholder="Hi {name}, thanks for visiting {business}! We'd love your feedback:"
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-none"
             rows="4"
             maxLength="160"

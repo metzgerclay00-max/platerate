@@ -461,7 +461,7 @@ export default function ReviewPage({ params }) {
         await trackEvent('form_opened', data.id);
       } catch (err) {
         console.error('Failed to load restaurant:', err);
-        setError('Restaurant not found');
+        setError('Coffee shop not found');
       } finally {
         setLoading(false);
       }
@@ -480,7 +480,7 @@ export default function ReviewPage({ params }) {
         <div className="text-6xl mb-4">❌</div>
         <h1 className="text-2xl font-bold text-gray-900 mb-2">Oops!</h1>
         <p className="text-gray-600 text-center">
-          {error || 'We could not find this restaurant.'}
+          {error || 'We could not find this coffee shop.'}
         </p>
       </div>
     );

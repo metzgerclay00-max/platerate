@@ -88,7 +88,7 @@ export async function POST(request) {
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px;">
             <h2 style="color: #dc2626;">Low Rating Alert</h2>
-            <p>A customer left a low rating at your restaurant:</p>
+            <p>A customer left a low rating at your coffee shop:</p>
             <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
               <tr>
                 <td style="padding: 8px; font-weight: bold; background: #f3f4f6;">Rating</td>

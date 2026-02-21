@@ -51,15 +51,15 @@ export default function Home() {
   const faqItems = [
     {
       question: "How does GetFives work?",
-      answer: "GetFives intercepts customer feedback at the moment of truth. Customers scan a QR code or click a link, rate their experience with stars, and are intelligently routed—happy customers (4-5 stars) go directly to leave a Google review, while lower ratings are collected as private feedback for you to improve.",
+      answer: "GetFives intercepts customer feedback at the moment of truth. Customers scan a QR code at your coffee shop or click a link, rate their experience with stars, and are intelligently routed—happy customers (4-5 stars) go directly to leave a Google review, while lower ratings are collected as private feedback for you to improve.",
     },
     {
       question: "Will this actually increase my Google reviews?",
-      answer: "Yes. Our customers see an average of 67% more Google reviews. By capturing happy customers at peak satisfaction and making it effortless to leave a review, GetFives turns word-of-mouth into 5-star ratings. Plus, you get immediate feedback from less-satisfied customers to address issues before they post publicly.",
+      answer: "Yes. Coffee shops using GetFives see an average of 67% more Google reviews. By capturing happy customers at peak satisfaction and making it effortless to leave a review, GetFives turns word-of-mouth into 5-star ratings. Plus, you get immediate feedback from less-satisfied customers to address issues before they post publicly.",
     },
     {
       question: "How do customers access the review form?",
-      answer: "We provide instant QR codes you can print and display in-house, include on receipts, or send via text message. You can also share a direct link. When customers scan or click, they land on a beautiful, mobile-optimized form that takes 15 seconds to complete.",
+      answer: "We provide instant QR codes you can print and display at the register, on tables, on cup sleeves, or include on receipts. You can also share a direct link via text. When customers scan or click, they land on a beautiful, mobile-optimized form that takes 15 seconds to complete.",
     },
     {
       question: "Can I customize what star ratings go to Google?",
@@ -71,7 +71,7 @@ export default function Home() {
     },
     {
       question: "How long does setup take?",
-      answer: "About 2 minutes. Create an account, configure your threshold and location details, download your QR code, and you're live. No credit card required for the free plan. Paid plans can be set up just as quickly with instant activation.",
+      answer: "About 2 minutes. Create an account, add your coffee shop details, download your QR code, and you're live. No credit card required for the free plan. Stick the QR code by the register and start collecting reviews today.",
     },
   ];
 
@@ -79,19 +79,19 @@ export default function Home() {
     {
       quote: "GetFives increased our Google reviews by 340% in just two months. Our rating went from 4.1 to 4.7 stars, and we're getting way fewer surprise negative reviews.",
       author: "Marco Deluca",
-      restaurant: "Mario's Bistro, Seattle WA",
+      restaurant: "Daily Grind Coffee, Seattle WA",
       rating: 5,
     },
     {
-      quote: "The private feedback from customers has been invaluable. We fixed our wait time process after getting consistent feedback—now it's our strongest asset. GetFives literally pays for itself.",
+      quote: "The private feedback has been invaluable. We fixed our morning rush wait times after getting consistent feedback—now it's our strongest asset. GetFives literally pays for itself.",
       author: "Sarah Chen",
       restaurant: "Brewed Awakening, San Francisco CA",
       rating: 5,
     },
     {
-      quote: "As someone who barely has time to breathe, GetFives is a lifesaver. Setup took 90 seconds, and within a week we had 23 new Google reviews. This is what a real SaaS product feels like.",
+      quote: "Between pulling shots and managing staff, I have zero time for marketing. Setup took 90 seconds, and within a week we had 23 new Google reviews. Total game changer.",
       author: "Antonio Rodriguez",
-      restaurant: "La Cascada, Miami FL",
+      restaurant: "Café Cubano, Miami FL",
       rating: 5,
     },
   ];
@@ -198,7 +198,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-2">
-              <span className="text-2xl">⭐</span>
+              <span className="text-2xl">☕</span>
               <span className="font-bold text-xl text-gray-900">GetFives</span>
             </div>
 
@@ -233,10 +233,10 @@ export default function Home() {
             {/* Left content */}
             <div>
               <h1 className="text-5xl md:text-6xl font-bold text-gray-900 leading-tight animate-fade-in-up mb-6">
-                Turn Every Customer Into a <span className="text-brand-600">5-Star Review</span>
+                Turn Every Coffee Lover Into a <span className="text-brand-600">5-Star Review</span>
               </h1>
               <p className="text-xl text-gray-600 animate-fade-in-up stagger-1 mb-8 leading-relaxed">
-                GetFives intercepts low ratings before they hit Google and redirects happy customers to leave glowing reviews. Get more 5-star ratings while fixing problems before they go public.
+                GetFives helps coffee shops intercept low ratings before they hit Google and redirects happy customers to leave glowing reviews. More 5-star ratings, fewer public complaints.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 animate-fade-in-up stagger-2">
                 <a href="/login" className="bg-brand-600 hover:bg-brand-700 text-white px-8 py-4 rounded-lg font-semibold transition shadow-lg hover:shadow-xl text-center">
@@ -293,10 +293,10 @@ export default function Home() {
       <section className="py-12 px-4 sm:px-6 lg:px-8 bg-white border-y border-gray-100">
         <div className="max-w-7xl mx-auto">
           <p className="text-center text-gray-600 font-medium mb-8">
-            Trusted by 500+ restaurants & cafés nationwide
+            Trusted by 500+ coffee shops nationwide
           </p>
           <div className="flex justify-center items-center flex-wrap gap-8 mb-12">
-            {['Mario\'s Bistro', 'The Golden Fork', 'La Cascada', 'Ember & Sage', 'Noodle Co'].map((name, i) => (
+            {['Daily Grind', 'Brewed Awakening', 'Café Cubano', 'Bean & Gone', 'Drip Drop Coffee'].map((name, i) => (
               <div key={i} className="text-center animate-fade-in-up" style={{ animationDelay: `${i * 0.1}s` }}>
                 <div className="text-gray-700 font-semibold text-sm">{name}</div>
               </div>
@@ -336,7 +336,7 @@ export default function Home() {
               {
                 step: '1',
                 title: 'Customer Scans QR Code',
-                description: 'Display a QR code in-house or on receipts. Customers scan and rate in 15 seconds.',
+                description: 'Display a QR code at the register, on tables, or on cup sleeves. Customers scan and rate in 15 seconds.',
                 icon: '📱',
               },
               {
@@ -372,7 +372,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 animate-fade-in-up">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">Powerful Features</h2>
-            <p className="text-xl text-gray-600">Everything you need to own your online reputation</p>
+            <p className="text-xl text-gray-600">Everything your coffee shop needs to own its online reputation</p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
@@ -380,7 +380,7 @@ export default function Home() {
               {
                 icon: '🎯',
                 title: 'QR Code Generation',
-                description: 'Instant printable QR codes. Display in-house, on receipts, or text to customers.',
+                description: 'Instant printable QR codes. Display at the register, on tables, cup sleeves, or text to customers.',
               },
               {
                 icon: '🎛️',
@@ -405,7 +405,7 @@ export default function Home() {
               {
                 icon: '🥘',
                 title: 'Category Insights',
-                description: 'Breakdown feedback by food quality, service speed, cleanliness, and more.',
+                description: 'Breakdown feedback by drink quality, service speed, atmosphere, and more.',
               },
             ].map((feature, i) => (
               <div
@@ -488,7 +488,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 animate-fade-in-up">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">The GetFives Effect</h2>
-            <p className="text-xl text-gray-600">Real results from real businesses</p>
+            <p className="text-xl text-gray-600">Real results from real coffee shops</p>
           </div>
 
           <div className="grid md:grid-cols-4 gap-8">
@@ -542,7 +542,7 @@ export default function Home() {
               {
                 name: 'Growth',
                 price: '$49',
-                description: 'Most popular for growing businesses',
+                description: 'Most popular for growing coffee shops',
                 features: [
                   '3 locations',
                   'Unlimited reviews',
@@ -556,7 +556,7 @@ export default function Home() {
               {
                 name: 'Pro',
                 price: '$99',
-                description: 'For serious multi-location operators',
+                description: 'For multi-location coffee brands',
                 features: [
                   'Unlimited locations',
                   'Custom branding',
@@ -627,7 +627,7 @@ export default function Home() {
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 animate-fade-in-up">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Loved by Business Owners</h2>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Loved by Coffee Shop Owners</h2>
             <p className="text-xl text-gray-600">See what customers are saying</p>
           </div>
 
@@ -693,7 +693,7 @@ export default function Home() {
       {/* Final CTA */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-brand-600 via-brand-500 to-brand-700 text-white">
         <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-4xl font-bold mb-4 animate-fade-in-up">Ready to Transform Your Reviews?</h2>
+          <h2 className="text-4xl font-bold mb-4 animate-fade-in-up">Ready to Be the Top-Rated Coffee Shop in Town?</h2>
           <p className="text-xl text-brand-100 mb-8 animate-fade-in-up stagger-1">
             Get started for free. No credit card required. See results in days.
           </p>
@@ -712,10 +712,10 @@ export default function Home() {
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
               <div className="flex items-center space-x-2 mb-4">
-                <span className="text-2xl">⭐</span>
+                <span className="text-2xl">☕</span>
                 <span className="font-bold text-white">GetFives</span>
               </div>
-              <p className="text-sm">Turning customers into 5-star reviewers.</p>
+              <p className="text-sm">Helping coffee shops earn more 5-star reviews.</p>
             </div>
 
             <div>

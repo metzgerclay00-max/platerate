@@ -584,13 +584,13 @@ function SettingsPanel({ restaurant, onSave, isSaving }) {
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
         <h3 className="text-lg font-semibold text-gray-900 mb-6">
-          Business Details
+          Shop Details
         </h3>
 
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Business Name
+              Shop Name
             </label>
             <input
               type="text"
@@ -873,7 +873,7 @@ export default function Dashboard() {
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">⭐</span>
+              <span className="text-white font-bold text-lg">☕</span>
             </div>
             <h1 className="text-xl font-bold text-gray-900">GetFives</h1>
           </div>

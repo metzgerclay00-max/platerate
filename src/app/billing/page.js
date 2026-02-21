@@ -28,7 +28,7 @@ const plans = [
     name: 'Growth',
     price: 49,
     period: '/month',
-    description: 'For growing businesses',
+    description: 'For growing coffee shops',
     locations: 3,
     reviewsPerMonth: null,
     features: [

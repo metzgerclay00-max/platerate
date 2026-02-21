@@ -284,11 +284,11 @@ function RestaurantStep({ userEmail, onComplete }) {
 
     try {
       if (!restaurantName.trim()) {
-        throw new Error("Restaurant name is required");
+        throw new Error("Coffee shop name is required");
       }
 
       if (!slug.trim()) {
-        throw new Error("Restaurant slug is required");
+        throw new Error("Shop URL slug is required");
       }
 
       onComplete({
@@ -306,21 +306,21 @@ function RestaurantStep({ userEmail, onComplete }) {
 
   return (
     <div className="w-full max-w-2xl mx-auto">
-      <h2 className="text-3xl font-bold text-gray-900 mb-2">Your business</h2>
+      <h2 className="text-3xl font-bold text-gray-900 mb-2">Your coffee shop</h2>
       <p className="text-gray-600 mb-8">
-        Tell us about your business so we can set up your review tracking.
+        Tell us about your shop so we can set up your review tracking.
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label className="block text-sm font-medium text-gray-900 mb-2">
-            Business Name *
+            Coffee Shop Name *
           </label>
           <input
             type="text"
             value={restaurantName}
             onChange={handleNameChange}
-            placeholder="e.g., The Golden Fork"
+            placeholder="e.g., Daily Grind Coffee"
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
             required
           />
@@ -336,7 +336,7 @@ function RestaurantStep({ userEmail, onComplete }) {
               type="text"
               value={slug}
               onChange={(e) => setSlug(e.target.value)}
-              placeholder="your-business"
+              placeholder="your-coffee-shop"
               className="w-full px-4 py-3 pl-40 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent font-mono text-sm"
             />
           </div>
@@ -347,20 +347,20 @@ function RestaurantStep({ userEmail, onComplete }) {
 
         <div>
           <label className="block text-sm font-medium text-gray-900 mb-2">
-            Business Type *
+            Shop Type *
           </label>
           <select
             value={restaurantType}
             onChange={(e) => setRestaurantType(e.target.value)}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
           >
-            <option>Restaurant</option>
-            <option>Café / Coffee Shop</option>
-            <option>Bar / Brewery</option>
-            <option>Bakery</option>
-            <option>Fast Casual</option>
-            <option>Fine Dining</option>
-            <option>Food Truck</option>
+            <option>Coffee Shop</option>
+            <option>Café</option>
+            <option>Espresso Bar</option>
+            <option>Coffee & Bakery</option>
+            <option>Drive-Thru Coffee</option>
+            <option>Roastery / Coffee Bar</option>
+            <option>Tea & Coffee House</option>
             <option>Other</option>
           </select>
         </div>
@@ -377,7 +377,7 @@ function RestaurantStep({ userEmail, onComplete }) {
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent text-sm"
           />
           <p className="text-gray-500 text-xs mt-2">
-            Find this by searching your business on Google Maps, then copy the URL.
+            Find this by searching your coffee shop on Google Maps, then copy the URL.
           </p>
         </div>
 
@@ -401,7 +401,7 @@ function RestaurantStep({ userEmail, onComplete }) {
           disabled={loading}
           className="w-full bg-brand-600 text-white py-3 rounded-lg font-medium hover:bg-brand-700 disabled:opacity-50 transition-colors"
         >
-          {loading ? "Setting up your business..." : "Continue"}
+          {loading ? "Setting up your shop..." : "Continue"}
         </button>
       </form>
     </div>
@@ -440,7 +440,7 @@ function BaselineStep({ onComplete, onSkip }) {
           <div className="text-4xl font-bold text-brand-600 mb-2">📊</div>
           <h3 className="font-semibold text-gray-900 mb-2">Track Progress</h3>
           <p className="text-gray-600 text-sm">
-            See how your restaurant's Google rating improves each week with GetFives's dashboard.
+            See how your coffee shop's Google rating improves each week with GetFives's dashboard.
           </p>
         </div>
 
@@ -707,7 +707,7 @@ function SuccessStep({ restaurant, onDashboard }) {
         <div className="text-6xl mb-4">🎉</div>
         <h2 className="text-3xl font-bold text-gray-900 mb-2">You're all set!</h2>
         <p className="text-gray-600">
-          Your business is ready to collect better reviews
+          Your coffee shop is ready to collect better reviews
         </p>
       </div>
 
@@ -914,7 +914,7 @@ export default function LoginPage() {
 
   const steps = [
     { number: 1, label: "Account" },
-    { number: 2, label: "Restaurant" },
+    { number: 2, label: "Your Shop" },
     { number: 3, label: "Baseline" },
     { number: 4, label: "Customize" },
     { number: 5, label: "Launch" },
@@ -948,7 +948,7 @@ export default function LoginPage() {
         {currentStep === "loading" ? (
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-600 mx-auto mb-4" />
-            <p className="text-gray-600">Setting up your business...</p>
+            <p className="text-gray-600">Setting up your coffee shop...</p>
           </div>
         ) : (
           <SuccessStep
@@ -990,7 +990,7 @@ export default function LoginPage() {
           </div>
 
           <div className="text-brand-100 text-sm">
-            Join 500+ businesses using GetFives
+            Join 500+ coffee shops using GetFives
           </div>
         </div>
 
