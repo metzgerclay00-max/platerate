@@ -161,7 +161,7 @@ export default function BillingPage() {
                 href="/dashboard"
                 className="text-brand-600 hover:text-brand-700 font-medium"
               >
-                ← Back to Dashboard
+                â Back to Dashboard
               </Link>
             </div>
           </div>

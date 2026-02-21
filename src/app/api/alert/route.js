@@ -105,7 +105,7 @@ export async function POST(request) {
             </table>
             <p>
               <a href="https://getfives.ai/dashboard/feedback" style="color: #2563eb; text-decoration: none;">
-                View feedback in dashboard →
+                View feedback in dashboard â
               </a>
             </p>
           </div>
