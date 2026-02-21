@@ -154,7 +154,7 @@ export default function BillingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2">
-              <div className="text-2xl font-bold text-brand-600">PlateRate</div>
+              <div className="text-2xl font-bold text-brand-600">GetFives</div>
             </Link>
             <div className="flex items-center gap-4">
               <Link
@@ -172,7 +172,7 @@ export default function BillingPage() {
         {/* Current Plan Section */}
         <div className="mb-16">
           <h1 className="text-4xl font-bold text-brand-900 mb-2">Billing & Subscription</h1>
-          <p className="text-brand-600 mb-8">Manage your PlateRate subscription and billing</p>
+          <p className="text-brand-600 mb-8">Manage your GetFives subscription and billing</p>
 
           <div className="bg-white rounded-lg border border-brand-200 p-8 shadow-sm">
             <div className="flex items-start justify-between mb-8">
@@ -384,7 +384,7 @@ export default function BillingPage() {
           <h3 className="text-xl font-bold text-brand-900 mb-2">Need Help?</h3>
           <p className="text-brand-600 mb-4">Have questions about our plans or need a custom solution?</p>
           <a
-            href="mailto:support@platerate.com"
+            href="mailto:support@getfives.ai"
             className="inline-block text-brand-600 hover:text-brand-700 font-medium underline"
           >
             Contact our support team

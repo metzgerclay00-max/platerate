@@ -188,7 +188,7 @@ export default function NotificationsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2">
-              <div className="text-2xl font-bold text-brand-600">PlateRate</div>
+              <div className="text-2xl font-bold text-brand-600">GetFives</div>
             </Link>
             <div className="flex items-center gap-4">
               <Link
@@ -539,7 +539,7 @@ export default function NotificationsPage() {
                 {/* Divider */}
                 <div className="border-t border-brand-200 pt-6">
                   <a
-                    href="mailto:support@platerate.com"
+                    href="mailto:support@getfives.ai"
                     className="text-sm text-brand-600 hover:text-brand-700 font-medium underline block text-center"
                   >
                     Need help? Contact support

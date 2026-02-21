@@ -50,7 +50,7 @@ function StatCard({ label, value, change, icon, trend }) {
 // QR Code Card Component
 function QRCodeCard({ restaurant }) {
   const [copied, setCopied] = useState(false);
-  const reviewUrl = restaurant.google_review_url || `https://platerate.app/r/${restaurant.slug}`;
+  const reviewUrl = restaurant.google_review_url || `https://getfives.ai/r/${restaurant.slug}`;
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(reviewUrl)}`;
 
   const handleCopy = () => {
@@ -156,7 +156,7 @@ function GoogleProgressTracker({ restaurant, feedback }) {
         <div>
           <p className="text-sm text-gray-600 mb-1">Redirected to Google</p>
           <p className="text-2xl font-bold text-brand-600">{redirectCount}</p>
-          <p className="text-xs text-gray-500 mt-1">From PlateRate form</p>
+          <p className="text-xs text-gray-500 mt-1">From GetFives form</p>
         </div>
         <div>
           <p className="text-sm text-gray-600 mb-1">Estimated Total</p>
@@ -182,7 +182,7 @@ function GoogleProgressTracker({ restaurant, feedback }) {
         <div className="bg-green-50 border border-green-100 rounded-lg p-3 text-sm">
           <p className="text-green-900 font-medium">
             Great momentum! You've gained {improvement} review
-            {improvement !== 1 ? "s" : ""} through PlateRate.
+            {improvement !== 1 ? "s" : ""} through GetFives.
           </p>
         </div>
       )}
@@ -875,20 +875,26 @@ export default function Dashboard() {
             <div className="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-lg">⭐</span>
             </div>
-            <h1 className="text-xl font-bold text-gray-900">PlateRate</h1>
+            <h1 className="text-xl font-bold text-gray-900">GetFives</h1>
           </div>
 
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-4">
             <span className="text-sm font-medium text-gray-700">
               {restaurant.name}
             </span>
 
-            <button className="relative p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+            <a href="/sms" className="px-3 py-1.5 text-sm font-medium text-brand-600 hover:bg-brand-50 rounded-lg transition-colors">
+              📱 SMS
+            </a>
+            <a href="/notifications" className="relative p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
               <span className="text-xl">🔔</span>
               <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-            </button>
+            </a>
+            <a href="/billing" className="px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+              Billing
+            </a>
 
-            <div className="border-l border-gray-200"></div>
+            <div className="border-l border-gray-200 h-6"></div>
 
             <button
               onClick={handleSignOut}

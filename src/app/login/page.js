@@ -134,7 +134,7 @@ function AuthStep({ onSuccess, onSignupSent }) {
         </h1>
         <p className="text-gray-600">
           {isSignUp
-            ? "Get started with PlateRate and boost your reviews"
+            ? "Get started with GetFives and boost your reviews"
             : "Log in to manage your reviews"}
         </p>
       </div>
@@ -328,10 +328,10 @@ function RestaurantStep({ userEmail, onComplete }) {
 
         <div>
           <label className="block text-sm font-medium text-gray-900 mb-2">
-            Your PlateRate URL
+            Your GetFives URL
           </label>
           <div className="relative">
-            <span className="absolute left-4 top-3 text-gray-500 text-sm">platerate.app/r/</span>
+            <span className="absolute left-4 top-3 text-gray-500 text-sm">getfives.ai/r/</span>
             <input
               type="text"
               value={slug}
@@ -440,7 +440,7 @@ function BaselineStep({ onComplete, onSkip }) {
           <div className="text-4xl font-bold text-brand-600 mb-2">📊</div>
           <h3 className="font-semibold text-gray-900 mb-2">Track Progress</h3>
           <p className="text-gray-600 text-sm">
-            See how your restaurant's Google rating improves each week with PlateRate's dashboard.
+            See how your restaurant's Google rating improves each week with GetFives's dashboard.
           </p>
         </div>
 
@@ -555,7 +555,7 @@ function CustomizeStep({ userEmail, onComplete }) {
     <div className="w-full max-w-2xl mx-auto">
       <h2 className="text-3xl font-bold text-gray-900 mb-2">Customize your flow</h2>
       <p className="text-gray-600 mb-8">
-        Configure how PlateRate routes customer feedback to optimize your Google rating.
+        Configure how GetFives routes customer feedback to optimize your Google rating.
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-8">
@@ -686,7 +686,7 @@ function SuccessStep({ restaurant, onDashboard }) {
     }
   }, []);
 
-  const reviewUrl = `https://platerate.app/r/${restaurant.slug}`;
+  const reviewUrl = `https://getfives.ai/r/${restaurant.slug}`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(reviewUrl);
@@ -967,7 +967,7 @@ export default function LoginPage() {
         {/* Left side - Brand Panel */}
         <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-brand-600 to-brand-800 text-white flex-col justify-between p-12">
           <div>
-            <div className="text-3xl font-bold mb-2">PlateRate</div>
+            <div className="text-3xl font-bold mb-2">GetFives</div>
             <p className="text-brand-100">Review Management Platform</p>
           </div>
 
@@ -990,7 +990,7 @@ export default function LoginPage() {
           </div>
 
           <div className="text-brand-100 text-sm">
-            Join 500+ businesses using PlateRate
+            Join 500+ businesses using GetFives
           </div>
         </div>
 

@@ -82,7 +82,7 @@ export async function POST(request) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'PlateRate Alerts <alerts@platerate.app>',
+        from: 'GetFives Alerts <alerts@getfives.ai>',
         to: alertEmail,
         subject: `Alert: ${rating}/5 star review at ${restaurant.name}`,
         html: `
@@ -104,7 +104,7 @@ export async function POST(request) {
               </tr>
             </table>
             <p>
-              <a href="https://platerate.app/dashboard/feedback" style="color: #2563eb; text-decoration: none;">
+              <a href="https://getfives.ai/dashboard/feedback" style="color: #2563eb; text-decoration: none;">
                 View feedback in dashboard →
               </a>
             </p>
@@ -130,7 +130,7 @@ export async function POST(request) {
       },
       body: JSON.stringify({
         personalizations: [{ to: [{ email: alertEmail }] }],
-        from: { email: 'alerts@platerate.app', name: 'PlateRate' },
+        from: { email: 'alerts@getfives.ai', name: 'GetFives' },
         subject: `Alert: ${rating}/5 star review at ${restaurant.name}`,
         content: [{
           type: 'text/html',

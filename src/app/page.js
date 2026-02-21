@@ -50,12 +50,12 @@ export default function Home() {
 
   const faqItems = [
     {
-      question: "How does PlateRate work?",
-      answer: "PlateRate intercepts customer feedback at the moment of truth. Customers scan a QR code or click a link, rate their experience with stars, and are intelligently routed—happy customers (4-5 stars) go directly to leave a Google review, while lower ratings are collected as private feedback for you to improve.",
+      question: "How does GetFives work?",
+      answer: "GetFives intercepts customer feedback at the moment of truth. Customers scan a QR code or click a link, rate their experience with stars, and are intelligently routed—happy customers (4-5 stars) go directly to leave a Google review, while lower ratings are collected as private feedback for you to improve.",
     },
     {
       question: "Will this actually increase my Google reviews?",
-      answer: "Yes. Our customers see an average of 67% more Google reviews. By capturing happy customers at peak satisfaction and making it effortless to leave a review, PlateRate turns word-of-mouth into 5-star ratings. Plus, you get immediate feedback from less-satisfied customers to address issues before they post publicly.",
+      answer: "Yes. Our customers see an average of 67% more Google reviews. By capturing happy customers at peak satisfaction and making it effortless to leave a review, GetFives turns word-of-mouth into 5-star ratings. Plus, you get immediate feedback from less-satisfied customers to address issues before they post publicly.",
     },
     {
       question: "How do customers access the review form?",
@@ -77,19 +77,19 @@ export default function Home() {
 
   const testimonials = [
     {
-      quote: "PlateRate increased our Google reviews by 340% in just two months. Our rating went from 4.1 to 4.7 stars, and we're getting way fewer surprise negative reviews.",
+      quote: "GetFives increased our Google reviews by 340% in just two months. Our rating went from 4.1 to 4.7 stars, and we're getting way fewer surprise negative reviews.",
       author: "Marco Deluca",
       restaurant: "Mario's Bistro, Seattle WA",
       rating: 5,
     },
     {
-      quote: "The private feedback from customers has been invaluable. We fixed our wait time process after getting consistent feedback—now it's our strongest asset. PlateRate literally pays for itself.",
+      quote: "The private feedback from customers has been invaluable. We fixed our wait time process after getting consistent feedback—now it's our strongest asset. GetFives literally pays for itself.",
       author: "Sarah Chen",
       restaurant: "Brewed Awakening, San Francisco CA",
       rating: 5,
     },
     {
-      quote: "As someone who barely has time to breathe, PlateRate is a lifesaver. Setup took 90 seconds, and within a week we had 23 new Google reviews. This is what a real SaaS product feels like.",
+      quote: "As someone who barely has time to breathe, GetFives is a lifesaver. Setup took 90 seconds, and within a week we had 23 new Google reviews. This is what a real SaaS product feels like.",
       author: "Antonio Rodriguez",
       restaurant: "La Cascada, Miami FL",
       rating: 5,
@@ -198,8 +198,8 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-2">
-              <span className="text-2xl">🍽️</span>
-              <span className="font-bold text-xl text-gray-900">PlateRate</span>
+              <span className="text-2xl">⭐</span>
+              <span className="font-bold text-xl text-gray-900">GetFives</span>
             </div>
 
             <div className="hidden md:flex items-center space-x-8">
@@ -236,7 +236,7 @@ export default function Home() {
                 Turn Every Customer Into a <span className="text-brand-600">5-Star Review</span>
               </h1>
               <p className="text-xl text-gray-600 animate-fade-in-up stagger-1 mb-8 leading-relaxed">
-                PlateRate intercepts low ratings before they hit Google and redirects happy customers to leave glowing reviews. Get more 5-star ratings while fixing problems before they go public.
+                GetFives intercepts low ratings before they hit Google and redirects happy customers to leave glowing reviews. Get more 5-star ratings while fixing problems before they go public.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 animate-fade-in-up stagger-2">
                 <a href="/login" className="bg-brand-600 hover:bg-brand-700 text-white px-8 py-4 rounded-lg font-semibold transition shadow-lg hover:shadow-xl text-center">
@@ -324,7 +324,7 @@ export default function Home() {
       <section id="features" className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 animate-fade-in-up">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">How PlateRate Works</h2>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">How GetFives Works</h2>
             <p className="text-xl text-gray-600">Three simple steps to transform your reviews</p>
           </div>
 
@@ -487,7 +487,7 @@ export default function Home() {
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 animate-fade-in-up">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">The PlateRate Effect</h2>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">The GetFives Effect</h2>
             <p className="text-xl text-gray-600">Real results from real businesses</p>
           </div>
 
@@ -712,8 +712,8 @@ export default function Home() {
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
               <div className="flex items-center space-x-2 mb-4">
-                <span className="text-2xl">🍽️</span>
-                <span className="font-bold text-white">PlateRate</span>
+                <span className="text-2xl">⭐</span>
+                <span className="font-bold text-white">GetFives</span>
               </div>
               <p className="text-sm">Turning customers into 5-star reviewers.</p>
             </div>
@@ -778,7 +778,7 @@ export default function Home() {
           </div>
 
           <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
-            <p className="text-sm">© 2024 PlateRate. All rights reserved.</p>
+            <p className="text-sm">© 2026 GetFives. All rights reserved.</p>
             <div className="flex gap-6 mt-4 md:mt-0">
               <a href="#" className="text-gray-500 hover:text-white transition">
                 Twitter

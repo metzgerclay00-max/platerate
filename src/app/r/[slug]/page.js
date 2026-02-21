@@ -407,14 +407,14 @@ function Step3ThankYou({ restaurant, customerName }) {
           Your feedback helps {restaurant.name} improve and serve you better next time.
         </p>
 
-        {/* Powered by PlateRate */}
+        {/* Powered by GetFives */}
         <a
-          href="https://platerate.app"
+          href="https://getfives.ai"
           target="_blank"
           rel="noopener noreferrer"
           className="text-xs text-gray-400 hover:text-gray-600 transition-colors"
         >
-          Powered by PlateRate
+          Powered by GetFives
         </a>
       </div>
 
