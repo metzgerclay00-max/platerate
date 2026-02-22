@@ -92,17 +92,17 @@ export default function Home() {
           </div>
 
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.1] mb-6">
-            Turn happy customers into<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 to-amber-400">5-star Google reviews</span>
+            More reviews. More customers.<br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 to-amber-400">More coffee sold.</span>
           </h1>
 
           <p className="text-lg text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed">
-            GetFives uses simple QR codes and smart routing to send satisfied customers straight to Google Reviews, while catching negative feedback privately before it goes public.
+            GetFives turns every customer visit into a 5-star review with QR codes, automated SMS follow-ups, and free drink rewards - then uses AI to help you respond to every review like a pro.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center mb-4">
             <a href="/login" className="inline-flex items-center justify-center gap-2 bg-white text-[#09090b] px-6 py-3 rounded-md font-medium hover:bg-gray-200 transition text-sm">
-              Get Your QR Code <IconArrowRight />
+              Start Getting Reviews <IconArrowRight />
             </a>
             <a href="#how-it-works" className="inline-flex items-center justify-center gap-2 border border-white/15 text-gray-300 px-6 py-3 rounded-md font-medium hover:bg-white/5 transition text-sm">
               See How It Works
@@ -119,9 +119,16 @@ export default function Home() {
             <StarRating selected={selectedStars} onSelect={setSelectedStars} />
 
             {selectedStars >= 4 && (
-              <div className="mt-6 bg-green-500/10 border border-green-500/20 rounded-lg p-4 text-center">
-                <p className="text-sm text-green-300 font-medium">Redirecting to Google Reviews...</p>
-                <div className="mt-2 w-full bg-green-500/20 rounded-full h-1"><div className="bg-green-400 h-1 rounded-full w-3/4" /></div>
+              <div className="mt-6 space-y-3">
+                <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4 text-center">
+                  <p className="text-sm text-green-300 font-medium">Redirecting to Google Reviews...</p>
+                  <div className="mt-2 w-full bg-green-500/20 rounded-full h-1"><div className="bg-green-400 h-1 rounded-full w-3/4" /></div>
+                </div>
+                <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-4 text-center">
+                  <p className="text-xs text-amber-300 font-medium mb-1">Your reward: Free drink of your choice</p>
+                  <p className="text-lg font-mono font-bold text-amber-200">FREE-7X3K</p>
+                  <p className="text-xs text-amber-400/60 mt-1">Show this to your barista</p>
+                </div>
               </div>
             )}
 
@@ -143,7 +150,7 @@ export default function Home() {
       <section className="py-10 px-6 border-y border-white/5">
         <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
           <div>
-            <div className="text-2xl font-bold text-white">67%</div>
+            <div className="text-2xl font-bold text-white">3x</div>
             <p className="text-xs text-gray-500 mt-1">More Google reviews</p>
           </div>
           <div>
@@ -151,8 +158,8 @@ export default function Home() {
             <p className="text-xs text-gray-500 mt-1">Avg. rating increase</p>
           </div>
           <div>
-            <div className="text-2xl font-bold text-white">45%</div>
-            <p className="text-xs text-gray-500 mt-1">Fewer negative reviews</p>
+            <div className="text-2xl font-bold text-white">92%</div>
+            <p className="text-xs text-gray-500 mt-1">SMS review request rate</p>
           </div>
           <div>
             <div className="text-2xl font-bold text-white">2 min</div>
@@ -192,9 +199,9 @@ export default function Home() {
             {/* Solution */}
             <div className="space-y-6">
               {[
-                { title: 'QR code asks automatically', desc: 'No staff training needed. A QR code at the register does the work for you, every time.' },
-                { title: 'Happy customers go to Google', desc: '4-5 star ratings are routed directly to your Google Reviews page. One tap.' },
-                { title: 'Bad feedback stays private', desc: 'Low ratings go to your dashboard. You see the issue, fix it, respond - no public damage.' },
+                { title: 'QR codes + SMS do the asking', desc: 'A QR code at the register and automated text messages after every visit. No staff training needed.' },
+                { title: 'Free drink rewards drive reviews', desc: 'Customers get a unique coupon code after reviewing. A free latte is a small price for a 5-star review.' },
+                { title: 'AI helps you respond to every review', desc: 'One-click AI generates professional responses to reviews. Copy, paste, done. Every review gets a reply.' },
               ].map((item, i) => (
                 <div key={i} className="flex gap-4">
                   <div className="w-8 h-8 rounded-full bg-green-500/10 border border-green-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -221,9 +228,9 @@ export default function Home() {
 
           <div className="grid md:grid-cols-3 gap-8">
             {[
-              { step: '01', title: 'Place your QR code', desc: 'Print it, stick it by the register, on tables, or on cup sleeves. Customers scan with their phone camera.' },
-              { step: '02', title: 'Customer rates their visit', desc: 'A quick, beautiful feedback flow opens instantly. Takes 15 seconds to complete.' },
-              { step: '03', title: 'Reviews flow automatically', desc: 'Happy customers are guided to Google. Critical feedback goes straight to your private dashboard.' },
+              { step: '01', title: 'Customer visits your shop', desc: 'They scan your QR code at the register, or you text them a review link after their visit. Takes 5 seconds.' },
+              { step: '02', title: 'They rate and get rewarded', desc: 'Happy customers go to Google Reviews. Everyone gets a free drink coupon code as a thank-you.' },
+              { step: '03', title: 'You respond with AI', desc: 'Your dashboard shows every review. One click generates a professional reply. Copy, paste, and build loyalty.' },
             ].map((item, i) => (
               <div key={i} className="relative group">
                 <div className="bg-[#111113] rounded-xl border border-white/5 p-6 hover:border-white/10 transition h-full">
@@ -263,8 +270,8 @@ export default function Home() {
               {[
                 { label: 'Total Reviews', value: '147', change: '+23 this month' },
                 { label: 'Google Rating', value: '4.7', change: 'Up from 4.1' },
-                { label: 'Feedback Caught', value: '34', change: 'Private responses' },
-                { label: 'Response Rate', value: '89%', change: 'Within 24 hours' },
+                { label: 'SMS Sent', value: '312', change: '92% open rate' },
+                { label: 'Rewards Redeemed', value: '89', change: '71% redemption' },
               ].map((stat, i) => (
                 <div key={i} className="bg-white/[0.03] rounded-lg p-4 border border-white/5">
                   <p className="text-xs text-gray-500 mb-1">{stat.label}</p>
@@ -272,6 +279,39 @@ export default function Home() {
                   <p className="text-xs text-green-400 mt-1">{stat.change}</p>
                 </div>
               ))}
+            </div>
+
+            {/* Feature cards row */}
+            <div className="grid md:grid-cols-3 gap-4 mb-6">
+              <div className="bg-white/[0.03] rounded-lg p-5 border border-white/5">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-6 h-6 rounded bg-amber-400/10 flex items-center justify-center">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" strokeWidth="2"><path d="M20 12V8H6a2 2 0 01-2-2c0-1.1.9-2 2-2h12v4"/><path d="M4 6v12c0 1.1.9 2 2 2h14v-4"/></svg>
+                  </div>
+                  <p className="text-xs text-gray-400 font-medium">Rewards</p>
+                </div>
+                <p className="text-lg font-bold text-white mb-1">FREE-7X3K</p>
+                <p className="text-xs text-gray-500">Free drink coupon - Active</p>
+              </div>
+              <div className="bg-white/[0.03] rounded-lg p-5 border border-white/5">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-6 h-6 rounded bg-purple-400/10 flex items-center justify-center">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" strokeWidth="2"><path d="M12 2a4 4 0 014 4c0 1.95-2 3-2 8h-4c0-5-2-6.05-2-8a4 4 0 014-4z"/><path d="M10 22h4"/></svg>
+                  </div>
+                  <p className="text-xs text-gray-400 font-medium">AI Response</p>
+                </div>
+                <p className="text-sm text-gray-300 leading-relaxed">"Thank you Sarah! So glad you loved the oat milk latte..."</p>
+              </div>
+              <div className="bg-white/[0.03] rounded-lg p-5 border border-white/5">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-6 h-6 rounded bg-green-400/10 flex items-center justify-center">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+                  </div>
+                  <p className="text-xs text-gray-400 font-medium">Quick SMS</p>
+                </div>
+                <p className="text-sm text-gray-300">(555) 123-4567</p>
+                <p className="text-xs text-green-400 mt-1">Review request sent</p>
+              </div>
             </div>
 
             {/* Review growth chart mockup */}
@@ -300,10 +340,10 @@ export default function Home() {
 
           <div className="grid md:grid-cols-2 gap-6">
             {[
-              { title: 'More 5-star reviews weekly', desc: 'Stop hoping customers leave reviews. GetFives makes it effortless for them.' },
-              { title: 'Higher Google ranking', desc: 'More recent, positive reviews signal to Google that your shop is active and trusted.' },
-              { title: 'More foot traffic', desc: 'Higher ratings mean more clicks, more visits, and more first-time customers.' },
-              { title: 'Fewer public complaints', desc: 'Catch unhappy customers before they post. Resolve issues privately.' },
+              { title: 'Reviews on autopilot', desc: 'QR codes capture walk-ins. SMS follow-ups catch everyone else. Free drink rewards seal the deal.' },
+              { title: 'Higher Google ranking', desc: 'More recent, positive reviews signal to Google that your shop is active and trusted. More visibility, more customers.' },
+              { title: 'Every review gets a response', desc: 'AI generates professional, personalized replies in one click. Customers feel heard. Google rewards engagement.' },
+              { title: 'Problems caught early', desc: 'Low ratings go to your private dashboard instead of Google. Fix issues before they become public complaints.' },
             ].map((item, i) => (
               <div key={i} className="flex gap-4 bg-[#111113] rounded-xl border border-white/5 p-6">
                 <div className="w-8 h-8 rounded-full bg-amber-400/10 border border-amber-400/20 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -354,21 +394,21 @@ export default function Home() {
           <div className="grid md:grid-cols-3 gap-6">
             {[
               {
-                quote: "Our Google reviews went from 4.1 to 4.7 stars in two months. Huge difference for foot traffic.",
+                quote: "The free drink reward codes are genius. Customers actually want to leave reviews now. Our Google went from 4.1 to 4.7 in two months.",
                 author: "Marco D.",
                 shop: "Daily Grind Coffee, Seattle",
                 rating: 5,
                 initials: "MD",
               },
               {
-                quote: "The private feedback alone is worth it. We found out our oat milk latte was under-extracted. Fixed it, complaints dropped overnight.",
+                quote: "The AI response generator saves me 30 minutes a day. Every review gets a personal reply and customers notice. Our repeat visits are way up.",
                 author: "Sarah C.",
                 shop: "Brewed Awakening, SF",
                 rating: 5,
                 initials: "SC",
               },
               {
-                quote: "Stuck the QR code by the register. 23 new Google reviews in the first week. Zero extra effort.",
+                quote: "We text every customer after their visit. 23 new Google reviews in the first week. The SMS follow-up is a game changer.",
                 author: "Antonio R.",
                 shop: "Cafe Cubano, Miami",
                 rating: 5,
@@ -412,21 +452,21 @@ export default function Home() {
                 name: 'Starter',
                 price: '$0',
                 desc: 'For getting started',
-                features: ['1 location', '50 reviews/month', 'Basic dashboard', 'QR code generation', 'Email support'],
+                features: ['1 location', 'QR code generation', 'Basic dashboard', '50 SMS/month', 'Email support'],
                 popular: false,
               },
               {
                 name: 'Growth',
                 price: '$49',
                 desc: 'For growing shops',
-                features: ['3 locations', 'Unlimited reviews', 'Funnel analytics', 'Email alerts', 'Category insights', 'Priority support'],
+                features: ['3 locations', 'Unlimited reviews', '500 SMS/month', 'Reward codes', 'AI review responses', 'Contact management', 'Priority support'],
                 popular: true,
               },
               {
                 name: 'Pro',
                 price: '$99',
                 desc: 'Multi-location brands',
-                features: ['Unlimited locations', 'Custom branding', 'SMS delivery', 'Form builder', 'API access', 'Dedicated support'],
+                features: ['Unlimited locations', '2,000 SMS/month', 'Unlimited AI responses', 'Custom reward offers', 'Funnel analytics', 'API access', 'Dedicated support'],
                 popular: false,
               },
             ].map((plan, i) => (
@@ -458,10 +498,10 @@ export default function Home() {
       <section className="py-24 px-6 border-t border-white/5 relative overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-amber-400/5 rounded-full blur-3xl pointer-events-none" />
         <div className="max-w-2xl mx-auto text-center relative z-10">
-          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">Start getting more 5-star reviews today</h2>
-          <p className="text-gray-500 mb-8">Set it up once. Let it work for you every day.</p>
+          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">Your next 5-star review is one scan away</h2>
+          <p className="text-gray-500 mb-8">QR codes. SMS follow-ups. Free drink rewards. AI responses. Everything your coffee shop needs to dominate Google.</p>
           <a href="/login" className="inline-flex items-center gap-2 bg-white text-[#09090b] px-6 py-3 rounded-md font-medium hover:bg-gray-200 transition text-sm">
-            Get Your QR Code <IconArrowRight />
+            Start Getting Reviews <IconArrowRight />
           </a>
           <p className="text-xs text-gray-600 mt-4">Free plan available. No credit card required.</p>
         </div>
@@ -477,11 +517,12 @@ export default function Home() {
 
           <div className="space-y-2">
             {[
-              { q: "How does GetFives work?", a: "Customers scan a QR code at your shop, rate their experience, and are intelligently routed. 4-5 stars go to Google Reviews. Lower ratings go to your private dashboard." },
-              { q: "Do I need any POS integration?", a: "No. GetFives works independently of your point-of-sale system. Just print the QR code and place it where customers can see it." },
-              { q: "How fast can I start?", a: "About 2 minutes. Create an account, add your shop details, and download your QR code. You can be collecting reviews today." },
-              { q: "Will this block bad reviews?", a: "GetFives doesn't block reviews. It routes unhappy customers to give you private feedback instead. You get a chance to fix issues before they post publicly." },
-              { q: "Is this allowed by Google's policies?", a: "Yes. GetFives does not create fake reviews or incentivize ratings. It simply makes it easier for genuinely happy customers to leave reviews they were already inclined to write." },
+              { q: "How does GetFives work?", a: "Three ways to collect reviews: QR codes at your shop, SMS review requests after visits, and free drink reward codes that motivate customers to leave feedback. Happy customers go to Google. Low ratings stay private." },
+              { q: "How do the free drink rewards work?", a: "After a customer leaves a review, they get a unique coupon code like FREE-7X3K. They show it to your barista for their free drink. You can track and mark codes as redeemed right from your dashboard." },
+              { q: "What does the AI review response do?", a: "One click generates a professional, personalized reply to any customer review. It reads the review, understands the tone, and drafts a warm response you can copy-paste to Google or Yelp. Edit it or use it as-is." },
+              { q: "How does the SMS review request work?", a: "Enter a customer's phone number after their visit and we send them a friendly text with a link to rate your shop. You can also import contacts from a CSV file for bulk sends." },
+              { q: "Is this allowed by Google's policies?", a: "Yes. GetFives does not create fake reviews or incentivize specific ratings. Customers choose their own rating. The reward is given for leaving any review, not for a specific star count." },
+              { q: "How fast can I start?", a: "About 2 minutes. Create an account, add your shop details, and download your QR code. Enable rewards and SMS from your dashboard. You can be collecting reviews today." },
               { q: "Is there a contract?", a: "No contracts. No hidden fees. Cancel anytime with one click." },
             ].map((item, i) => (
               <div key={i} className="border border-white/5 rounded-lg overflow-hidden">
@@ -505,7 +546,7 @@ export default function Home() {
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-start gap-8">
           <div>
             <span className="font-semibold text-white">GetFives</span>
-            <p className="text-xs text-gray-600 mt-2 max-w-xs">Helping coffee shops earn more 5-star reviews and catch problems early.</p>
+            <p className="text-xs text-gray-600 mt-2 max-w-xs">QR codes, SMS, rewards, and AI - everything your coffee shop needs to get more 5-star reviews.</p>
           </div>
           <div className="flex gap-10 text-xs text-gray-500">
             <div>
