@@ -553,6 +553,357 @@ function RecentActivityFeed({ feedback }) {
   );
 }
 
+// Rewards Panel Component
+function RewardsPanel({ restaurant }) {
+  const [rewards, setRewards] = useState([]);
+  const [stats, setStats] = useState({ total: 0, active: 0, redeemed: 0 });
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState("all");
+  const [updating, setUpdating] = useState(null);
+
+  useEffect(() => {
+    fetchRewards();
+  }, [restaurant.id]);
+
+  const fetchRewards = async () => {
+    try {
+      const res = await fetch(`/api/reward?restaurant_id=${restaurant.id}`);
+      const data = await res.json();
+      if (data.rewards) {
+        setRewards(data.rewards);
+        setStats(data.stats);
+      }
+    } catch (err) {
+      console.error("Failed to fetch rewards:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRedeem = async (code) => {
+    setUpdating(code);
+    try {
+      const res = await fetch("/api/reward", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code, status: "redeemed" }),
+      });
+      if (res.ok) {
+        fetchRewards();
+      }
+    } catch (err) {
+      console.error("Failed to redeem:", err);
+    } finally {
+      setUpdating(null);
+    }
+  };
+
+  const filtered = filter === "all" ? rewards : rewards.filter((r) => r.status === filter);
+
+  if (loading) {
+    return (
+      <div className="animate-pulse space-y-4">
+        <div className="h-32 bg-gray-200 rounded-2xl" />
+        <div className="h-64 bg-gray-200 rounded-2xl" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <p className="text-sm font-medium text-gray-600 mb-1">Total Issued</p>
+          <p className="text-3xl font-bold text-gray-900">{stats.total}</p>
+        </div>
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <p className="text-sm font-medium text-gray-600 mb-1">Active</p>
+          <p className="text-3xl font-bold text-amber-600">{stats.active}</p>
+        </div>
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <p className="text-sm font-medium text-gray-600 mb-1">Redeemed</p>
+          <p className="text-3xl font-bold text-green-600">{stats.redeemed}</p>
+        </div>
+      </div>
+
+      {/* Reward Codes Table */}
+      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-lg font-semibold text-gray-900">Reward Codes</h3>
+          <div className="flex gap-2">
+            {["all", "active", "redeemed"].map((f) => (
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
+                className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
+                  filter === f
+                    ? "bg-brand-100 text-brand-700"
+                    : "text-gray-600 hover:bg-gray-100"
+                }`}
+              >
+                {f.charAt(0).toUpperCase() + f.slice(1)}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {filtered.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="text-4xl mb-3">🎁</div>
+            <p className="text-gray-600">No reward codes yet</p>
+            <p className="text-sm text-gray-500 mt-1">Codes are generated when customers leave reviews</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-gray-200">
+                  <th className="text-left text-sm font-medium text-gray-600 py-3 px-2">Code</th>
+                  <th className="text-left text-sm font-medium text-gray-600 py-3 px-2">Reward</th>
+                  <th className="text-left text-sm font-medium text-gray-600 py-3 px-2">Status</th>
+                  <th className="text-left text-sm font-medium text-gray-600 py-3 px-2">Issued</th>
+                  <th className="text-left text-sm font-medium text-gray-600 py-3 px-2">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((reward) => (
+                  <tr key={reward.id} className="border-b border-gray-50 hover:bg-gray-50">
+                    <td className="py-3 px-2">
+                      <span className="font-mono font-bold text-gray-900">{reward.code}</span>
+                    </td>
+                    <td className="py-3 px-2 text-sm text-gray-600">{reward.reward_text}</td>
+                    <td className="py-3 px-2">
+                      <span
+                        className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
+                          reward.status === "active"
+                            ? "bg-amber-100 text-amber-700"
+                            : reward.status === "redeemed"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-gray-100 text-gray-600"
+                        }`}
+                      >
+                        {reward.status}
+                      </span>
+                    </td>
+                    <td className="py-3 px-2 text-sm text-gray-500">
+                      {new Date(reward.created_at).toLocaleDateString()}
+                    </td>
+                    <td className="py-3 px-2">
+                      {reward.status === "active" && (
+                        <button
+                          onClick={() => handleRedeem(reward.code)}
+                          disabled={updating === reward.code}
+                          className="px-3 py-1.5 text-xs font-medium bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors disabled:opacity-50"
+                        >
+                          {updating === reward.code ? "..." : "Mark Redeemed"}
+                        </button>
+                      )}
+                      {reward.status === "redeemed" && (
+                        <span className="text-xs text-gray-500">
+                          {reward.redeemed_at
+                            ? new Date(reward.redeemed_at).toLocaleDateString()
+                            : "Redeemed"}
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Reviews Panel Component (AI Response Generator)
+function ReviewsPanel({ restaurant, feedback }) {
+  const [generating, setGenerating] = useState(null);
+  const [responses, setResponses] = useState({});
+  const [copied, setCopied] = useState(null);
+  const [filter, setFilter] = useState("all");
+
+  // Initialize responses from existing feedback data
+  useEffect(() => {
+    const existing = {};
+    feedback.forEach((f) => {
+      if (f.ai_response) {
+        existing[f.id] = f.ai_response;
+      }
+    });
+    setResponses(existing);
+  }, [feedback]);
+
+  const handleGenerate = async (feedbackItem) => {
+    setGenerating(feedbackItem.id);
+    try {
+      const res = await fetch("/api/ai-response", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          feedback_id: feedbackItem.id,
+          restaurant_id: restaurant.id,
+        }),
+      });
+      const data = await res.json();
+      if (data.response) {
+        setResponses((prev) => ({ ...prev, [feedbackItem.id]: data.response }));
+      } else {
+        alert(data.error || "Failed to generate response");
+      }
+    } catch (err) {
+      console.error("AI response failed:", err);
+      alert("Failed to generate response. Please try again.");
+    } finally {
+      setGenerating(null);
+    }
+  };
+
+  const handleCopy = (id, text) => {
+    navigator.clipboard.writeText(text);
+    setCopied(id);
+    setTimeout(() => setCopied(null), 2000);
+  };
+
+  const getStarColor = (rating) => {
+    if (rating >= 4) return "text-green-600 bg-green-50";
+    if (rating === 3) return "text-amber-600 bg-amber-50";
+    return "text-red-600 bg-red-50";
+  };
+
+  const filtered =
+    filter === "all"
+      ? feedback
+      : filter === "responded"
+      ? feedback.filter((f) => responses[f.id])
+      : filter === "unresponded"
+      ? feedback.filter((f) => !responses[f.id] && f.comment)
+      : filter === "low"
+      ? feedback.filter((f) => f.rating <= 2)
+      : feedback;
+
+  if (feedback.length === 0) {
+    return (
+      <div className="bg-white rounded-2xl p-12 shadow-sm border border-gray-100 text-center">
+        <div className="text-4xl mb-3">💬</div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">No reviews yet</h3>
+        <p className="text-sm text-gray-600">Reviews will appear here as customers submit them</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Filter Bar */}
+      <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex gap-2 flex-wrap">
+        {[
+          { id: "all", label: "All Reviews" },
+          { id: "unresponded", label: "Needs Response" },
+          { id: "responded", label: "Responded" },
+          { id: "low", label: "Low Ratings" },
+        ].map((f) => (
+          <button
+            key={f.id}
+            onClick={() => setFilter(f.id)}
+            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+              filter === f.id
+                ? "bg-brand-100 text-brand-700"
+                : "text-gray-600 hover:bg-gray-100"
+            }`}
+          >
+            {f.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Reviews List */}
+      {filtered.map((item) => (
+        <div key={item.id} className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <div className="flex items-start justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center">
+                <span className="text-sm font-bold text-brand-600">
+                  {(item.customer_name || "A").charAt(0).toUpperCase()}
+                </span>
+              </div>
+              <div>
+                <p className="font-medium text-gray-900">{item.customer_name || "Anonymous"}</p>
+                <p className="text-xs text-gray-500">{new Date(item.created_at).toLocaleDateString()}</p>
+              </div>
+            </div>
+            <span className={`px-3 py-1 rounded-full text-sm font-semibold ${getStarColor(item.rating)}`}>
+              {item.rating}/5
+            </span>
+          </div>
+
+          {item.comment ? (
+            <p className="text-gray-700 mb-4 leading-relaxed">{item.comment}</p>
+          ) : (
+            <p className="text-gray-400 italic mb-4">No written review</p>
+          )}
+
+          {item.categories && item.categories.length > 0 && (
+            <div className="flex gap-1 mb-4 flex-wrap">
+              {item.categories.map((cat) => (
+                <span key={cat} className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                  {cat}
+                </span>
+              ))}
+            </div>
+          )}
+
+          {/* AI Response Section */}
+          <div className="border-t border-gray-100 pt-4 mt-4">
+            {responses[item.id] ? (
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-xs font-semibold text-purple-600 uppercase tracking-wide">AI-Generated Response</span>
+                </div>
+                <div className="bg-purple-50 border border-purple-100 rounded-lg p-4 mb-3">
+                  <p className="text-sm text-gray-800 leading-relaxed">{responses[item.id]}</p>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleCopy(item.id, responses[item.id])}
+                    className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                      copied === item.id
+                        ? "bg-green-500 text-white"
+                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    }`}
+                  >
+                    {copied === item.id ? "Copied!" : "Copy Response"}
+                  </button>
+                  <button
+                    onClick={() => handleGenerate(item)}
+                    disabled={generating === item.id}
+                    className="px-4 py-2 text-sm font-medium text-purple-600 hover:bg-purple-50 rounded-lg transition-colors disabled:opacity-50"
+                  >
+                    {generating === item.id ? "Regenerating..." : "Regenerate"}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button
+                onClick={() => handleGenerate(item)}
+                disabled={generating === item.id || !item.comment}
+                className="px-4 py-2 text-sm font-medium bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+              >
+                {generating === item.id ? (
+                  <><span className="animate-spin">...</span> Generating...</>
+                ) : (
+                  <><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2a4 4 0 014 4c0 1.95-2 3-2 8h-4c0-5-2-6.05-2-8a4 4 0 014-4z"/><path d="M10 22h4"/><path d="M10 18h4"/></svg> Generate AI Response</>
+                )}
+              </button>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 // Settings Panel Component
 function SettingsPanel({ restaurant, onSave, isSaving }) {
   const [formData, setFormData] = useState({
@@ -562,14 +913,18 @@ function SettingsPanel({ restaurant, onSave, isSaving }) {
     alert_email: restaurant.alert_email || "",
     google_baseline_reviews: restaurant.google_baseline_reviews || 0,
     google_baseline_rating: restaurant.google_baseline_rating || 0,
+    reward_enabled: restaurant.reward_enabled || false,
+    reward_text: restaurant.reward_text || "Free drink of your choice",
   });
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]:
-        name.includes("rating") || name.includes("reviews")
+        type === "checkbox"
+          ? checked
+          : name.includes("rating") || name.includes("reviews")
           ? parseFloat(value)
           : value,
     }));
@@ -644,6 +999,51 @@ function SettingsPanel({ restaurant, onSave, isSaving }) {
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent"
             />
           </div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+        <h3 className="text-lg font-semibold text-gray-900 mb-6">
+          Reward Codes
+        </h3>
+        <p className="text-sm text-gray-600 mb-4">
+          Give customers a reward code after they leave a review
+        </p>
+
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <label className="text-sm font-medium text-gray-700">Enable Reward Codes</label>
+              <p className="text-xs text-gray-500">Customers get a unique code after reviewing</p>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                name="reward_enabled"
+                checked={formData.reward_enabled}
+                onChange={handleChange}
+                className="sr-only peer"
+              />
+              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-600"></div>
+            </label>
+          </div>
+
+          {formData.reward_enabled && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Reward Description
+              </label>
+              <input
+                type="text"
+                name="reward_text"
+                value={formData.reward_text}
+                onChange={handleChange}
+                placeholder="Free drink of your choice"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+              />
+              <p className="text-xs text-gray-500 mt-1">This is shown to customers with their code</p>
+            </div>
+          )}
         </div>
       </div>
 
@@ -906,6 +1306,8 @@ export default function Dashboard() {
         <div className="max-w-7xl mx-auto px-6 flex gap-8 border-t border-gray-200">
           {[
             { id: "overview", label: "Overview" },
+            { id: "rewards", label: "Rewards" },
+            { id: "reviews", label: "Reviews" },
             { id: "analytics", label: "Analytics" },
             { id: "settings", label: "Settings" },
           ].map((tab) => (
@@ -996,6 +1398,14 @@ export default function Dashboard() {
             {/* Recent Activity Feed */}
             <RecentActivityFeed feedback={feedback} />
           </div>
+        )}
+
+        {activeTab === "rewards" && (
+          <RewardsPanel restaurant={restaurant} />
+        )}
+
+        {activeTab === "reviews" && (
+          <ReviewsPanel restaurant={restaurant} feedback={feedback} />
         )}
 
         {activeTab === "analytics" && (

@@ -102,6 +102,7 @@ function Header({ restaurant, onSignOut }) {
 function TabNavigation({ activeTab, setActiveTab }) {
   const tabs = [
     { id: "send", label: "Send SMS", icon: "📱" },
+    { id: "contacts", label: "Contacts", icon: "👥" },
     { id: "history", label: "History", icon: "📋" },
     { id: "settings", label: "Settings", icon: "⚙️" },
   ];
@@ -136,6 +137,247 @@ function formatPhoneNumber(value) {
   if (cleaned.length <= 3) return cleaned;
   if (cleaned.length <= 6) return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3)}`;
   return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6, 10)}`;
+}
+
+// Quick Send Card Component
+function QuickSendCard({ restaurant }) {
+  const [phone, setPhone] = useState("");
+  const [name, setName] = useState("");
+  const [sending, setSending] = useState(false);
+  const [result, setResult] = useState(null);
+
+  const handleQuickSend = async (e) => {
+    e.preventDefault();
+    const cleaned = phone.replace(/\D/g, "");
+    if (cleaned.length !== 10) {
+      setResult({ type: "error", message: "Please enter a valid 10-digit phone number" });
+      return;
+    }
+
+    setSending(true);
+    setResult(null);
+
+    try {
+      const template = restaurant?.sms_template || "Hi {name}, thanks for visiting {business}! We'd love your feedback - it only takes 30 seconds: {link}";
+      let message = template
+        .replace("{name}", name || "there")
+        .replace("{business}", restaurant?.name || "our coffee shop")
+        .replace("{link}", `https://getfives.ai/r/${restaurant?.slug || ""}`);
+
+      const res = await fetch("/api/sms", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [{ phone: cleaned, name: name, message: message }],
+        }),
+      });
+
+      const data = await res.json();
+
+      // Save contact
+      if (restaurant?.id) {
+        await supabase.from("contacts").upsert({
+          restaurant_id: restaurant.id,
+          phone: cleaned,
+          name: name || null,
+          last_sms_at: new Date().toISOString(),
+        }, { onConflict: "restaurant_id,phone" });
+      }
+
+      if (data.sent > 0) {
+        setResult({ type: "success", message: `Review request sent to ${formatPhoneNumber(phone)}!` });
+        setPhone("");
+        setName("");
+      } else {
+        setResult({ type: "error", message: data.errors?.[0] || "Failed to send. Check Twilio settings." });
+      }
+    } catch (err) {
+      setResult({ type: "error", message: "Failed to send. Please try again." });
+    } finally {
+      setSending(false);
+    }
+  };
+
+  return (
+    <div className="bg-gradient-to-r from-brand-500 to-brand-600 rounded-2xl p-6 shadow-lg text-white mb-8">
+      <h3 className="text-lg font-bold mb-1">Quick Review Request</h3>
+      <p className="text-brand-100 text-sm mb-4">Send a review request SMS in one tap</p>
+      <form onSubmit={handleQuickSend} className="flex flex-col md:flex-row gap-3">
+        <input
+          type="tel"
+          value={phone}
+          onChange={(e) => setPhone(formatPhoneNumber(e.target.value))}
+          placeholder="(555) 123-4567"
+          className="flex-1 px-4 py-3 rounded-lg bg-white/20 text-white placeholder-brand-200 border border-white/30 focus:outline-none focus:bg-white/30"
+          maxLength={14}
+        />
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Customer name (optional)"
+          className="flex-1 px-4 py-3 rounded-lg bg-white/20 text-white placeholder-brand-200 border border-white/30 focus:outline-none focus:bg-white/30"
+        />
+        <button
+          type="submit"
+          disabled={sending || phone.replace(/\D/g, "").length !== 10}
+          className="px-6 py-3 bg-white text-brand-600 font-semibold rounded-lg hover:bg-brand-50 transition-colors disabled:opacity-50 whitespace-nowrap"
+        >
+          {sending ? "Sending..." : "Send Request"}
+        </button>
+      </form>
+      {result && (
+        <p className={`mt-3 text-sm ${result.type === "success" ? "text-green-200" : "text-red-200"}`}>
+          {result.message}
+        </p>
+      )}
+    </div>
+  );
+}
+
+// Contacts Tab Component
+function ContactsTab({ restaurant }) {
+  const [contacts, setContacts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    fetchContacts();
+  }, [restaurant?.id]);
+
+  const fetchContacts = async () => {
+    if (!restaurant?.id) return;
+    try {
+      const { data, error } = await supabase
+        .from("contacts")
+        .select("*")
+        .eq("restaurant_id", restaurant.id)
+        .order("created_at", { ascending: false });
+
+      if (!error && data) {
+        setContacts(data);
+      }
+    } catch (err) {
+      console.error("Failed to fetch contacts:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filtered = contacts.filter((c) => {
+    const q = search.toLowerCase();
+    return (
+      (c.name || "").toLowerCase().includes(q) ||
+      (c.phone || "").includes(q)
+    );
+  });
+
+  const daysSince = (date) => {
+    if (!date) return null;
+    const diff = Date.now() - new Date(date).getTime();
+    return Math.floor(diff / (1000 * 60 * 60 * 24));
+  };
+
+  if (loading) {
+    return <SkeletonLoader rows={8} />;
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Search */}
+      <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search contacts by name or phone..."
+          className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+        />
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+          <p className="text-sm text-gray-600">Total Contacts</p>
+          <p className="text-2xl font-bold text-gray-900">{contacts.length}</p>
+        </div>
+        <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+          <p className="text-sm text-gray-600">Contacted This Month</p>
+          <p className="text-2xl font-bold text-brand-600">
+            {contacts.filter((c) => daysSince(c.last_sms_at) !== null && daysSince(c.last_sms_at) <= 30).length}
+          </p>
+        </div>
+        <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+          <p className="text-sm text-gray-600">Left a Review</p>
+          <p className="text-2xl font-bold text-green-600">
+            {contacts.filter((c) => c.review_received).length}
+          </p>
+        </div>
+      </div>
+
+      {/* Contacts Table */}
+      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">All Contacts</h3>
+        {filtered.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-gray-500">
+              {search ? "No contacts match your search" : "No contacts yet. Send your first review request!"}
+            </p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-gray-200">
+                  <th className="text-left text-sm font-medium text-gray-600 py-3 px-2">Name</th>
+                  <th className="text-left text-sm font-medium text-gray-600 py-3 px-2">Phone</th>
+                  <th className="text-left text-sm font-medium text-gray-600 py-3 px-2">Last SMS</th>
+                  <th className="text-left text-sm font-medium text-gray-600 py-3 px-2">Review</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((contact) => {
+                  const days = daysSince(contact.last_sms_at);
+                  return (
+                    <tr key={contact.id} className="border-b border-gray-50 hover:bg-gray-50">
+                      <td className="py-3 px-2 font-medium text-gray-900">
+                        {contact.name || "Unknown"}
+                      </td>
+                      <td className="py-3 px-2 text-sm text-gray-600 font-mono">
+                        {contact.phone.length === 10
+                          ? formatPhoneNumber(contact.phone)
+                          : contact.phone}
+                      </td>
+                      <td className="py-3 px-2 text-sm text-gray-500">
+                        {days !== null ? (
+                          <span className={days < 30 ? "text-amber-600" : ""}>
+                            {days === 0 ? "Today" : `${days}d ago`}
+                          </span>
+                        ) : (
+                          "Never"
+                        )}
+                      </td>
+                      <td className="py-3 px-2">
+                        {contact.review_received ? (
+                          <span className="inline-flex px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                            Yes
+                          </span>
+                        ) : (
+                          <span className="inline-flex px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
+                            No
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
 
 // Send SMS Tab Component
@@ -891,6 +1133,11 @@ export default function SMSPage() {
       <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
 
       <main className="max-w-7xl mx-auto px-6 py-8">
+        {/* Quick Send Card - always visible on Send tab */}
+        {activeTab === "send" && (
+          <QuickSendCard restaurant={restaurant} />
+        )}
+
         {activeTab === "send" && (
           <SendSMSTab
             restaurant={restaurant}
@@ -899,6 +1146,7 @@ export default function SMSPage() {
             smsSent={smsSent}
           />
         )}
+        {activeTab === "contacts" && <ContactsTab restaurant={restaurant} />}
         {activeTab === "history" && <HistoryTab />}
         {activeTab === "settings" && (
           <SettingsTab
